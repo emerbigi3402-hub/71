@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OPD71 A - Emergency Inspection</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Prompt', 'sans-serif'] },
+                    colors: {
+                        brand: { 50: '#f0fdf4', 100: '#dcfce7', 500: '#22c55e', 600: '#16a34a', 900: '#14532d' },
+                        accent: { 500: '#6366f1', 600: '#4f46e5' }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { background-color: #f8fafc; overflow-x: hidden; }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        /* Checkbox Customization */
+        .custom-checkbox { width: 1.5rem; height: 1.5rem; border-radius: 0.5rem; cursor: pointer; accent-color: #22c55e; }
+        
+        /* Canvas Styling */
+        #signature-pad { touch-action: none; background-color: white; }
+    </style>
+</head>
+<body class="text-slate-800 antialiased selection:bg-brand-100 selection:text-brand-900">
+
+    <div id="login-section" class="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-brand-50 to-indigo-50 z-50 fixed inset-0">
+        <div class="bg-white/80 backdrop-blur-md p-8 rounded-[2rem] shadow-2xl max-w-sm w-full text-center border border-white transform transition-all hover:scale-105 duration-300">
+            <div class="w-20 h-20 mx-auto bg-brand-100 text-brand-500 rounded-full flex items-center justify-center mb-6 shadow-inner">
+                <i class="fa-solid fa-truck-medical text-3xl"></i>
+            </div>
+            <h2 class="text-2xl font-bold mb-2 text-slate-800">OPD71 A</h2>
+            <p class="text-slate-500 mb-8 text-sm">ระบบตรวจสอบรถ Emergency</p>
+            
+            <div class="relative mb-6">
+                <i class="fa-solid fa-lock absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400"></i>
+                <input type="password" id="pin-input" inputmode="numeric" placeholder="ระบุ PIN (3628)" 
+                    class="w-full pl-12 pr-4 py-4 bg-slate-50 border-none rounded-2xl focus:ring-4 focus:ring-brand-100 focus:bg-white transition-all text-center text-xl tracking-[0.5em] font-bold outline-none">
+            </div>
+            
+            <button onclick="checkPIN()" class="w-full bg-brand-500 hover:bg-brand-600 text-white font-semibold py-4 rounded-2xl shadow-lg shadow-brand-500/30 transition-all transform hover:-translate-y-1 active:translate-y-0">
+                เข้าสู่ระบบ <i class="fa-solid fa-arrow-right ml-2"></i>
+            </button>
+        </div>
+    </div>
+
+    <div id="app-section" class="hidden min-h-screen pb-24">
+        <div class="bg-white/80 backdrop-blur-lg sticky top-0 z-40 shadow-sm border-b border-slate-100 px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-brand-100 text-brand-600 rounded-xl flex items-center justify-center">
+                    <i class="fa-solid fa-truck-medical"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg leading-tight">OPD71 A</h1>
+                    <p class="text-xs text-slate-500">Emergency Checklist</p>
+                </div>
+            </div>
+            <button onclick="logout()" class="w-10 h-10 bg-slate-100 hover:bg-rose-100 text-slate-600 hover:text-rose-600 rounded-full flex items-center justify-center transition-colors">
+                <i class="fa-solid fa-power-off"></i>
+            </button>
+        </div>
+
+        <div class="max-w-3xl mx-auto p-4 sm:p-6 space-y-6 mt-4">
+            
+            <div class="bg-white rounded-3xl p-6 shadow-xl shadow-slate-200/50 border border-slate-50">
+                <h3 class="text-xl font-bold mb-4 flex items-center gap-2 text-accent-600">
+                    <i class="fa-solid fa-layer-group"></i> ชั้นที่ 1 (ยาฉุกเฉิน)
+                </h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" id="floor1-items">
+                    </div>
+            </div>
+
+            <div class="bg-white rounded-3xl p-6 shadow-xl shadow-slate-200/50 border border-slate-50">
+                <h3 class="text-xl font-bold mb-4 flex items-center gap-2 text-brand-600">
+                    <i class="fa-solid fa-syringe"></i> ชั้นที่ 2 (อุปกรณ์ IV)
+                </h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" id="floor2-items"></div>
+            </div>
+
+            <div class="bg-white rounded-3xl p-6 shadow-xl shadow-slate-200/50 border border-slate-50">
+                <h3 class="text-xl font-bold mb-4 flex items-center gap-2 text-rose-500">
+                    <i class="fa-solid fa-lungs"></i> ชั้นที่ 3 (Airway & Misc)
+                </h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" id="floor3-items"></div>
+            </div>
+
+            <div class="bg-gradient-to-br from-slate-800 to-slate-900 rounded-3xl p-6 shadow-2xl text-white">
+                <h3 class="text-xl font-bold mb-6 flex items-center gap-2">
+                    <i class="fa-solid fa-user-check"></i> ผู้ตรวจสอบ
+                </h3>
+                
+                <div class="space-y-6">
+                    <div>
+                        <label class="block text-sm text-slate-300 mb-2">เลือกชื่อผู้ตรวจ</label>
+                        <select id="inspector-name" class="w-full p-4 bg-slate-700/50 border border-slate-600 rounded-2xl focus:ring-2 focus:ring-brand-500 text-white outline-none appearance-none">
+                            <option value="">-- กำลังโหลดรายชื่อ --</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm text-slate-300 mb-2 flex justify-between">
+                            ลายเซ็น 
+                            <span onclick="clearSignature()" class="text-xs text-rose-400 cursor-pointer hover:text-rose-300"><i class="fa-solid fa-eraser"></i> ล้างลายเซ็น</span>
+                        </label>
+                        <canvas id="signature-pad" class="w-full h-40 rounded-2xl border-2 border-slate-600 cursor-crosshair"></canvas>
+                    </div>
+
+                    <button onclick="submitInspection()" id="submit-btn" class="w-full bg-brand-500 hover:bg-brand-400 text-white font-bold py-4 rounded-2xl shadow-lg shadow-brand-500/20 transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2 text-lg">
+                        <i class="fa-solid fa-cloud-arrow-up"></i> บันทึกข้อมูลการตรวจสอบ
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // --- ⚙️ CONFIGURATION ---
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyS1ShTNDnnPWJjT3eYIki6tKquaFPzZmzzZxSQGlRCTIM7RMaihPi24aenNre_MaHFwg/exec';
+        const APP_PIN = '3628'; // PIN สำหรับเข้าระบบ
+
+        // --- 📋 DATA STRUCTURE (อ้างอิงจาก Backend OPD71 A) ---
+        const floor1_equipment = [
+            'Adrenaline ( 1 : 1000 ) 5 amp', 'Amiodarone 2 amp', 'Atropine (0.6 mg/amp.) 2 amp', 
+            'Adenosine (6 mg./vial) 1 amp', 'Valium (10 mg./amp.) 1 amp', '50% Glucose (50 ml./vial) 1 vial', 
+            '0.9 % NSS (100 ml 2 ขวด)', '5 % DW (100 ml 2 ขวด)'
+        ];
+
+        const floor2_equipment = [
+            '0.9 % NSS (1000 ml 1 ขวด)', 'Syringe Disposable ขนาดต่างๆ อย่างละ 3', 'เข็มฉีดยา เบอร์18-24 อย่างละ 3', 
+            'Set IV 3 set', 'IV Catheter No. 24, 22, 20, 18 อย่างละ 3', 'Injection plug 3 set', 
+            'Extension Tube 3 set', 'Three - way 3 อัน', 'Transpore 1 นิ้ว 1ม้วน', 'Tourniquet 2 อัน'
+        ];
+
+        const floor3_equipment = [
+            'สาย Suction No 14,16 อย่างละ 1', 'Ambu bag + Mask  1 ชุด', 'สายต่อออกซิเจน 1 เส้น', 
+            'O2 Mask c bag,O2 canular อย่างละ 1', 'กรรไกร 1', 'ถุงมือ, Mask อย่างละ 5 อัน', 
+            'Stethoscope 1', 'กระดานและปากกา 1', 'CPR reccord'
+        ];
+
+        // --- 🚀 INITIALIZATION ---
+        window.onload = () => {
+            checkSession();
+            renderCheckboxes();
+            initSignaturePad();
+        };
+
+        // --- 🔒 AUTHENTICATION ---
+        function checkSession() {
+            if (sessionStorage.getItem('isLoggedIn') === 'true') {
+                document.getElementById('login-section').classList.add('hidden');
+                document.getElementById('app-section').classList.remove('hidden');
+                loadInspectorNames();
+            }
+        }
+
+        function checkPIN() {
+            const pin = document.getElementById('pin-input').value;
+            if (pin === APP_PIN) {
+                sessionStorage.setItem('isLoggedIn', 'true');
+                Swal.fire({
+                    icon: 'success', title: 'เข้าสู่ระบบสำเร็จ', 
+                    toast: true, position: 'top-end', showConfirmButton: false, timer: 1500
+                });
+                checkSession();
+            } else {
+                Swal.fire({
+                    icon: 'error', title: 'PIN ไม่ถูกต้อง', text: 'กรุณาลองใหม่อีกครั้ง',
+                    confirmButtonColor: '#4f46e5', confirmButtonText: 'ตกลง'
+                });
+                document.getElementById('pin-input').value = '';
+            }
+        }
+
+        function logout() {
+            sessionStorage.removeItem('isLoggedIn');
+            location.reload();
+        }
+
+        // --- 🎨 UI RENDERER ---
+        function renderCheckboxes() {
+            const createHTML = (items) => items.map(item => `
+                <label class="flex items-start gap-3 p-3 bg-slate-50 hover:bg-brand-50 rounded-2xl cursor-pointer transition-colors border border-transparent hover:border-brand-200 group">
+                    <div class="mt-1">
+                        <input type="checkbox" data-name="${item}" class="custom-checkbox equipment-checkbox">
+                    </div>
+                    <span class="text-slate-700 font-medium text-sm group-hover:text-brand-700 transition-colors">${item}</span>
+                </label>
+            `).join('');
+
+            document.getElementById('floor1-items').innerHTML = createHTML(floor1_equipment);
+            document.getElementById('floor2-items').innerHTML = createHTML(floor2_equipment);
+            document.getElementById('floor3-items').innerHTML = createHTML(floor3_equipment);
+        }
+
+        // --- 📡 API CALLS ---
+        async function loadInspectorNames() {
+            try {
+                const response = await fetch(`${SCRIPT_URL}?action=load_names`);
+                const result = await response.json();
+                if (result.success) {
+                    const select = document.getElementById('inspector-name');
+                    select.innerHTML = '<option value="">-- กรุณาเลือกชื่อ --</option>' + 
+                        result.data.map(name => `<option value="${name}">${name}</option>`).join('');
+                }
+            } catch (error) {
+                console.error("Error loading names:", error);
+            }
+        }
+
+        // --- ✍️ SIGNATURE PAD (รองรับ Touch Screen) ---
+        let canvas, ctx, isDrawing = false;
+        function initSignaturePad() {
+            canvas = document.getElementById('signature-pad');
+            ctx = canvas.getContext('2d');
+            
+            // Adjust canvas resolution
+            const rect = canvas.parentElement.getBoundingClientRect();
+            canvas.width = rect.width;
+            canvas.height = 160;
+            ctx.lineWidth = 3;
+            ctx.lineCap = 'round';
+            ctx.strokeStyle = '#0f172a';
+
+            // Mouse Events
+            canvas.addEventListener('mousedown', startDrawing);
+            canvas.addEventListener('mousemove', draw);
+            canvas.addEventListener('mouseup', stopDrawing);
+            canvas.addEventListener('mouseout', stopDrawing);
+
+            // Touch Events (Mobile)
+            canvas.addEventListener('touchstart', handleTouch, {passive: false});
+            canvas.addEventListener('touchmove', handleTouch, {passive: false});
+            canvas.addEventListener('touchend', stopDrawing);
+        }
+
+        function getMousePos(e) {
+            const rect = canvas.getBoundingClientRect();
+            return {
+                x: e.clientX - rect.left,
+                y: e.clientY - rect.top
+            };
+        }
+
+        function handleTouch(e) {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const mouseEvent = new MouseEvent(e.type === 'touchstart' ? 'mousedown' : 'mousemove', {
+                clientX: touch.clientX, clientY: touch.clientY
+            });
+            canvas.dispatchEvent(mouseEvent);
+        }
+
+        function startDrawing(e) {
+            isDrawing = true;
+            const pos = getMousePos(e);
+            ctx.beginPath();
+            ctx.moveTo(pos.x, pos.y);
+        }
+
+        function draw(e) {
+            if (!isDrawing) return;
+            const pos = getMousePos(e);
+            ctx.lineTo(pos.x, pos.y);
+            ctx.stroke();
+        }
+
+        function stopDrawing() {
+            isDrawing = false;
+        }
+
+        function clearSignature() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        function isCanvasEmpty() {
+            const blank = document.createElement('canvas');
+            blank.width = canvas.width;
+            blank.height = canvas.height;
+            return canvas.toDataURL() === blank.toDataURL();
+        }
+
+        // --- 📍 GPS LOCATION ---
+        function getLocation() {
+            return new Promise((resolve, reject) => {
+                if (!navigator.geolocation) {
+                    resolve("GPS not supported");
+                } else {
+                    navigator.geolocation.getCurrentPosition(
+                        position => resolve(`${position.coords.latitude}, ${position.coords.longitude}`),
+                        error => resolve("Location Denied/Error"),
+                        { enableHighAccuracy: true, timeout: 5000 }
+                    );
+                }
+            });
+        }
+
+        // --- 📤 SUBMIT FORM ---
+        async function submitInspection() {
+            const inspector = document.getElementById('inspector-name').value;
+            
+            // Validation
+            if (!inspector) return Swal.fire({icon: 'warning', title: 'แจ้งเตือน', text: 'กรุณาเลือกชื่อผู้ตรวจสอบ'});
+            if (isCanvasEmpty()) return Swal.fire({icon: 'warning', title: 'แจ้งเตือน', text: 'กรุณาเซ็นชื่อรับรอง'});
+
+            // Loading state
+            const btn = document.getElementById('submit-btn');
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> กำลังบันทึกข้อมูล...';
+            btn.disabled = true;
+
+            try {
+                // Get Location
+                const location = await getLocation();
+
+                // Build Payload
+                const payload = {
+                    id: `ID-${Date.now()}`,
+                    inspector: inspector,
+                    signature: canvas.toDataURL('image/png'),
+                    location: location
+                };
+
+                // Add Checkbox Values (Dynamic Mapping)
+                document.querySelectorAll('.equipment-checkbox').forEach(cb => {
+                    payload[cb.getAttribute('data-name')] = cb.checked;
+                });
+
+                // Request to Web App
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        action: 'create_inspection',
+                        data: payload
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    Swal.fire({
+                        icon: 'success', title: 'บันทึกสำเร็จ!', text: result.message,
+                        confirmButtonColor: '#22c55e'
+                    }).then(() => {
+                        // Reset Form
+                        document.querySelectorAll('.equipment-checkbox').forEach(cb => cb.checked = false);
+                        document.getElementById('inspector-name').value = '';
+                        clearSignature();
+                    });
+                } else {
+                    throw new Error(result.error);
+                }
+
+            } catch (error) {
+                Swal.fire({
+                    icon: 'error', title: 'เกิดข้อผิดพลาด', text: error.message || 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้'
+                });
+            } finally {
+                btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> บันทึกข้อมูลการตรวจสอบ';
+                btn.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>
