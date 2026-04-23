@@ -370,7 +370,7 @@
         const allEquipments = [...equipmentData.floor1, ...equipmentData.floor2, ...equipmentData.floor3];
         allEquipments.forEach(item => {
           const radio = document.querySelector(`input[name="eq_${item}"]:checked`);
-          payload[item] = (radio && radio.value === 'true'); // แปลงค่าเป็น Boolean หรือตามที่ backend รองรับ
+          payload[item] = (radio && radio.value === 'true'); 
         });
 
         const response = await fetch(API_URL, {
@@ -398,6 +398,7 @@
 
     // ----- เริ่มต้นระบบ -----
     window.onload = () => {
+      // โหลด UI และเชื่อมต่ออัตโนมัติทันที ไม่ต้องรหัสผ่าน
       generateFormUI();
       initSignature();
       loadMedicines();
