@@ -2,870 +2,718 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ระบบตรวจสอบอุปกรณ์รถ Emergency OPD 7 ชั้น 1 A</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>ระบบตรวจสอบอุปกรณ์รถ Emergency</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="/_sdk/element_sdk.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
   <style>
-    body {
-      box-sizing: border-box;
-      font-family: 'Prompt', sans-serif;
-    }
-    * {
-      font-family: 'Prompt', sans-serif;
-    }
-    .modal-backdrop {
-      backdrop-filter: blur(4px);
+    * { font-family: 'Prompt', sans-serif; box-sizing: border-box; }
+    body { background-color: #f0fdf4; }
+    .modal-backdrop { backdrop-filter: blur(2px); }
+    ::-webkit-scrollbar { width: 4px; height: 4px; }
+    ::-webkit-scrollbar-thumb { background: #10b981; border-radius: 10px; }
+    
+    @media (max-width: 640px) {
+      .hide-mobile { display: none; }
+      th, td { padding: 0.6rem 0.5rem !important; font-size: 0.8rem !important; }
+      .p-card { padding: 1rem !important; }
+      .radio-btn { width: 1.5rem !important; height: 1.5rem !important; }
+      .radio-label { font-size: 1rem !important; }
     }
   </style>
-  <style>@view-transition { navigation: auto; }</style>
-  <style>
-  /* สำหรับหน้าจอมือถือ: ปรับขนาดหัวตารางและแถวให้เล็กลง */
-  @media (max-width: 640px) {
-    table thead th {
-      padding-top: 0.4rem !important;
-      padding-bottom: 0.4rem !important;
-      font-size: 0.75rem !important;
-    }
-    table tbody td {
-      padding-top: 0.5rem !important;
-      padding-bottom: 0.5rem !important;
-      font-size: 0.8rem !important;
-    }
-    .p-6 {
-      padding: 1rem !important;
-    }
-    #add-medicine-btn {
-      padding: 0.4rem 0.8rem !important;
-      font-size: 0.8rem !important;
-    }
-    h2.text-xl {
-      font-size: 1rem !important;
-    }
-  }</style>
-  <style>
-  @media (max-width: 640px) {
-    #submit-inspection {
-      width: 100%;
-      max-width: 320px;
-      justify-content: center;
-      font-size: 1rem;
-    }
-  }</style>
-  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
 </head>
-<body class="bg-gradient-to-br from-emerald-50 to-teal-50 min-h-full">
-  <div class="max-w-7xl mx-auto p-4 sm:p-6">
-    <div class="bg-white rounded-2xl shadow-lg p-6 mb-6">
-      <div class="flex items-center justify-between mb-4">
-        <div class="flex items-center gap-3">
-          <div class="bg-emerald-500 p-3 rounded-xl">
-            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-          </div>
-          <div class="flex flex-col">
-            <h1 id="app-title" class="text-lg xs:text-xl sm:text-2xl md:text-3xl font-bold text-gray-800 leading-tight">
-              ระบบตรวจสอบยาและเวชภัณฑ์รถ Emergency OPD 7 ชั้น 1 A
-            </h1>
-            <span class="text-xs sm:text-sm text-gray-500 mt-1">
-              กลุ่มการพยาบาล สถาบันบำราศนราดูร
-            </span>
-            <div class="flex items-center gap-2 mt-1">
-              <div id="status-indicator" class="w-2 h-2 rounded-full bg-gray-400 animate-pulse"></div>
-              <span id="status-text" class="text-sm text-gray-600">กำลังเชื่อมต่อ...</span>
-            </div>
+<body class="min-h-full pb-10">
+  <div class="max-w-5xl mx-auto p-2 sm:p-4">
+    
+    <div class="bg-white rounded-xl shadow-sm p-card sm:p-5 mb-4 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="bg-emerald-500 p-2 sm:p-3 rounded-lg hide-mobile">
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+        </div>
+        <div class="flex flex-col">
+          <h1 class="text-base sm:text-xl font-bold text-gray-800 leading-tight">ระบบตรวจสอบรถ Emergency OPD71 A</h1>
+          <span class="text-xs text-gray-500">สถาบันบำราศนราดูร</span>
+          <div class="flex items-center gap-1 mt-1">
+            <div id="status-indicator" class="w-2 h-2 rounded-full bg-yellow-500 animate-pulse"></div>
+            <span id="status-text" class="text-xs text-yellow-600">กำลังเชื่อมต่อฐานข้อมูล...</span>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="bg-white rounded-2xl shadow-lg overflow-hidden mb-6">
-      <div class="p-6 border-b border-gray-200">
-        <div class="flex flex-col sm:flex-col gap-3">
-          <h2 class="text-xl sm:text-2xl font-bold text-gray-800 flex items-center gap-2">
-            <span class="text-2xl">📋</span>
-            รายการยาและเวชภัณฑ์
-          </h2>
-          <div>
-            <button id="add-medicine-btn" class="bg-emerald-500 hover:bg-emerald-600 text-white font-semibold py-2 px-4 rounded-xl transition-all duration-200 flex items-center gap-2 shadow-md">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-              </svg>
-              <span id="add-button-text">เพิ่มยา/เวชภัณฑ์ใหม่</span>
-            </button>
-          </div>
+    <div class="bg-white rounded-xl shadow-sm overflow-hidden mb-4">
+      <div class="p-card sm:p-4 border-b border-gray-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+        <h2 class="text-sm sm:text-lg font-bold text-gray-800 flex items-center gap-2">
+          📋 รายการยาและเวชภัณฑ์ 
+          <span id="current-datetime" class="text-[10px] sm:text-xs font-normal text-emerald-600 bg-emerald-50 px-2 py-1 rounded border border-emerald-200"></span>
+        </h2>
+        <div class="flex gap-2 w-full sm:w-auto">
+          <button onclick="fetchMedicinesOnly()" class="flex-1 sm:flex-none bg-blue-50 text-blue-600 hover:bg-blue-100 px-3 py-2 rounded-lg text-xs sm:text-sm font-medium flex justify-center items-center gap-1">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+            <span class="hide-mobile">รีเฟรช</span>
+          </button>
+          <button onclick="openAddMedicineModal()" class="flex-1 sm:flex-none bg-emerald-50 text-emerald-600 hover:bg-emerald-100 px-3 py-2 rounded-lg text-xs sm:text-sm font-medium flex justify-center items-center gap-1">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
+            <span>เพิ่มยา/เวชภัณฑ์</span>
+          </button>
         </div>
-        <div class="p-6">
-          <div class="overflow-x-auto">
-            <table class="w-full bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100">
-              <thead class="bg-gradient-to-r from-emerald-500 to-emerald-600 text-white">
-                <tr>
-                  <th class="px-6 py-3 text-left font-semibold rounded-tl-2xl">ยา/เวชภัณฑ์</th>
-                  <th class="px-6 py-3 text-center font-semibold">⏰ วันที่เหลือ</th>
-                  <th class="px-6 py-3 text-center font-semibold">🏷️ สถานะ</th>
-                  <th class="px-6 py-3 text-center font-semibold rounded-tr-2xl">⚙️ การจัดการ</th>
-                </tr>
-              </thead>
-              <tbody id="medicine-table-body" class="divide-y divide-gray-100">
-                </tbody>
-            </table>
-          </div>
-        </div>
-        <div id="empty-state" class="text-center py-12 text-gray-400 hidden">
-          <svg class="w-16 h-16 mx-auto mb-4 opacity-50" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>
-          <p class="text-lg font-medium">ยังไม่มีรายการ</p>
-          <p class="text-sm">เพิ่มรายการยาหรือเวชภัณฑ์เพื่อเริ่มต้นใช้งาน</p>
-        </div>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-center">
+          <thead class="bg-emerald-500 text-white text-xs sm:text-sm">
+            <tr>
+              <th class="px-3 py-2 text-left">รายการ</th>
+              <th class="px-3 py-2">เหลือ(วัน)</th>
+              <th class="px-3 py-2">สถานะ</th>
+              <th class="px-3 py-2 w-12">จัดการ</th>
+            </tr>
+          </thead>
+          <tbody id="medicine-table-body" class="divide-y divide-gray-100 text-xs sm:text-sm"></tbody>
+        </table>
       </div>
     </div>
 
-    <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-      <div class="p-6 border-b border-gray-200">
-        <h2 class="text-xl font-bold text-gray-800 flex items-center gap-2"><span class="text-2xl">🚑</span> บันทึกการตรวจสอบรถ Emergency</h2>
+    <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+      <div class="p-card sm:p-4 border-b border-gray-100">
+        <h2 class="text-base sm:text-lg font-bold text-gray-800">🚑 บันทึกการตรวจสอบรถ</h2>
       </div>
-      <form id="emergencyForm" class="bg-white rounded-lg shadow-lg p-4 md:p-6">
-        
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4 mb-4 md:mb-6">
+      
+      <form id="emergencyForm" class="p-card sm:p-5">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
           <div>
-            <label class="block text-emerald-700 font-medium mb-2 text-base md:text-lg">วันที่ <span class="text-red-500">*</span></label> 
-            <input type="date" id="date" class="w-full p-3 md:p-4 border border-emerald-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-base md:text-lg" required>
-          </div>
-          <div>
-            <label class="block text-emerald-700 font-medium mb-2 text-base md:text-lg">เวร <span class="text-red-500">*</span></label> 
-            <select id="shift" class="w-full p-3 md:p-4 border border-emerald-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-base md:text-lg" required> 
-              <option value="">เลือกเวร</option> 
-              <option value="เช้า">เช้า</option> 
-              <option value="บ่าย">บ่าย</option> 
-              <option value="ดึก">ดึก</option> 
+            <label class="block text-sm sm:text-base text-emerald-700 font-medium mb-2 text-center sm:text-left">วัน <span class="text-red-500">*</span></label>
+            <select id="day" class="w-full p-3 border border-emerald-200 rounded-lg text-base text-center sm:text-left focus:outline-none focus:border-emerald-500" required>
+              <option value="">เลือกวัน</option>
+              <option value="วันจันทร์">วันจันทร์</option>
+              <option value="วันศุกร์">วันศุกร์</option>
             </select>
           </div>
           <div>
-            <label class="block text-emerald-700 font-medium mb-2 text-base md:text-lg">ID</label> 
-            <input type="text" id="checkId" class="w-full p-3 md:p-4 border border-emerald-300 rounded-lg bg-gray-100 text-base md:text-lg" readonly>
+            <label class="block text-sm sm:text-base text-emerald-700 font-medium mb-2 text-center sm:text-left">วันที่ตรวจ</label>
+            <input type="date" id="date" class="w-full p-3 border border-emerald-200 rounded-lg text-base text-center sm:text-left focus:outline-none focus:border-emerald-500" required>
+            <input type="hidden" id="checkId">
           </div>
         </div>
 
         <div class="space-y-6">
-          
-          <div class="bg-blue-50 p-4 rounded-xl">
-            <h3 class="font-bold text-blue-800 mb-4 text-lg md:text-xl">ชั้นที่ 1</h3>
-            
-            <div id="medicineSection" class="mb-4 bg-white p-4 rounded-lg border border-blue-200">
-              <label class="block text-emerald-700 font-medium mb-3 md:mb-4 text-base md:text-lg">ประเภท Box ยา <span class="text-red-500">*</span></label>
-              <div class="space-y-3 md:space-y-4">
-                <label class="flex items-center space-x-3 md:space-x-4"> 
-                  <input type="radio" name="medicineType" value="มี Box ยา" class="w-5 h-5 md:w-6 md:h-6 text-emerald-600 focus:ring-emerald-500" required> 
-                  <span class="text-emerald-700 text-base md:text-lg">มี Box ยา</span> 
-                </label> 
-                <label class="flex items-center space-x-3 md:space-x-4"> 
-                  <input type="radio" name="medicineType" value="Box ยาอยู่ที่แผนกอื่น" class="w-5 h-5 md:w-6 md:h-6 text-emerald-600 focus:ring-emerald-500" required> 
-                  <span class="text-emerald-700 text-base md:text-lg">Box ยาอยู่ที่แผนกอื่น</span> 
-                </label>
-              </div>
-            </div>
-
-            <div id="medicineChecklist" class="hidden mt-4">
-              <h4 class="text-lg font-semibold text-blue-800 mb-3">รายการยา</h4>
-              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                <div class="p-4 bg-white rounded-lg border"><label class="block text-base md:text-lg font-medium text-gray-700 mb-3">Adrenaline ( 1 : 1000 ) 5 amp</label><div class="flex justify-between"><label class="flex items-center space-x-2"> <input type="radio" name="eq_adrenaline" value="✓" class="w-4 h-4 md:w-5 md:h-5 text-emerald-600"> <span class="text-green-600 text-base md:text-lg">✓</span> </label> <label class="flex items-center space-x-2"> <input type="radio" name="eq_adrenaline" value="✗" class="w-4 h-4 md:w-5 md:h-5 text-red-600"> <span class="text-red-600 text-base md:text-lg">✗</span> </label></div></div>
-                <div class="p-4 bg-white rounded-lg border"><label class="block text-base md:text-lg font-medium text-gray-700 mb-3">Amiodarone 2 amp</label><div class="flex justify-between"><label class="flex items-center space-x-2"> <input type="radio" name="eq_amiodarone" value="✓" class="w-4 h-4 md:w-5 md:h-5 text-emerald-600"> <span class="text-green-600 text-base md:text-lg">✓</span> </label> <label class="flex items-center space-x-2"> <input type="radio" name="eq_amiodarone" value="✗" class="w-4 h-4 md:w-5 md:h-5 text-red-600"> <span class="text-red-600 text-base md:text-lg">✗</span> </label></div></div>
-                <div class="p-4 bg-white rounded-lg border"><label class="block text-base md:text-lg font-medium text-gray-700 mb-3">Atropine (0.6 mg/amp.) 2 amp</label><div class="flex justify-between"><label class="flex items-center space-x-2"> <input type="radio" name="eq_atropine" value="✓" class="w-4 h-4 md:w-5 md:h-5 text-emerald-600"> <span class="text-green-600 text-base md:text-lg">✓</span> </label> <label class="flex items-center space-x-2"> <input type="radio" name="eq_atropine" value="✗" class="w-4 h-4 md:w-5 md:h-5 text-red-600"> <span class="text-red-600 text-base md:text-lg">✗</span> </label></div></div>
-                <div class="p-4 bg-white rounded-lg border"><label class="block text-base md:text-lg font-medium text-gray-700 mb-3">Adenosine (6 mg./vial) 1 amp</label><div class="flex justify-between"><label class="flex items-center space-x-2"> <input type="radio" name="eq_adenosine" value="✓" class="w-4 h-4 md:w-5 md:h-5 text-emerald-600"> <span class="text-green-600 text-base md:text-lg">✓</span> </label> <label class="flex items-center space-x-2"> <input type="radio" name="eq_adenosine" value="✗" class="w-4 h-4 md:w-5 md:h-5 text-red-600"> <span class="text-red-600 text-base md:text-lg">✗</span> </label></div></div>
-                <div class="p-4 bg-white rounded-lg border"><label class="block text-base md:text-lg font-medium text-gray-700 mb-3">Valium (10 mg./amp.) 1 amp</label><div class="flex justify-between"><label class="flex items-center space-x-2"> <input type="radio" name="eq_valium" value="✓" class="w-4 h-4 md:w-5 md:h-5 text-emerald-600"> <span class="text-green-600 text-base md:text-lg">✓</span> </label> <label class="flex items-center space-x-2"> <input type="radio" name="eq_valium" value="✗" class="w-4 h-4 md:w-5 md:h-5 text-red-600"> <span class="text-red-600 text-base md:text-lg">✗</span> </label></div></div>
-                <div class="p-4 bg-white rounded-lg border"><label class="block text-base md:text-lg font-medium text-gray-700 mb-3">50% Glucose (50 ml./vial) 1 vial</label><div class="flex justify-between"><label class="flex items-center space-x-2"> <input type="radio" name="eq_glucose" value="✓" class="w-4 h-4 md:w-5 md:h-5 text-emerald-600"> <span class="text-green-600 text-base md:text-lg">✓</span> </label> <label class="flex items-center space-x-2"> <input type="radio" name="eq_glucose" value="✗" class="w-4 h-4 md:w-5 md:h-5 text-red-600"> <span class="text-red-600 text-base md:text-lg">✗</span> </label></div></div>
-                <div class="p-4 bg-white rounded-lg border"><label class="block text-base md:text-lg font-medium text-gray-700 mb-3">0.9 % NSS (100 ml 2 ขวด)</label><div class="flex justify-between"><label class="flex items-center space-x-2"> <input type="radio" name="eq_nss100" value="✓" class="w-4 h-4 md:w-5 md:h-5 text-emerald-600"> <span class="text-green-600 text-base md:text-lg">✓</span> </label> <label class="flex items-center space-x-2"> <input type="radio" name="eq_nss100" value="✗" class="w-4 h-4 md:w-5 md:h-5 text-red-600"> <span class="text-red-600 text-base md:text-lg">✗</span> </label></div></div>
-                <div class="p-4 bg-white rounded-lg border"><label class="block text-base md:text-lg font-medium text-gray-700 mb-3">5 % DW (100 ml 2 ขวด)</label><div class="flex justify-between"><label class="flex items-center space-x-2"> <input type="radio" name="eq_dw5" value="✓" class="w-4 h-4 md:w-5 md:h-5 text-emerald-600"> <span class="text-green-600 text-base md:text-lg">✓</span> </label> <label class="flex items-center space-x-2"> <input type="radio" name="eq_dw5" value="✗" class="w-4 h-4 md:w-5 md:h-5 text-red-600"> <span class="text-red-600 text-base md:text-lg">✗</span> </label></div></div>
+          <div class="bg-blue-50 p-card sm:p-4 rounded-xl">
+            <h3 class="font-bold text-blue-800 mb-3 text-center sm:text-left text-base sm:text-lg">ชั้นที่ 1</h3>
+            <div class="p-4 bg-white rounded-lg border border-blue-100 shadow-sm mx-auto flex flex-col justify-center">
+              <label class="block text-base sm:text-lg font-medium text-blue-800 mb-4 text-center w-full">ประเภท Box ยา <span class="text-red-500">*</span></label>
+              <div class="flex justify-between w-full px-2 sm:px-6">
+                <label class="flex items-center justify-center sm:justify-start space-x-2 cursor-pointer"><input type="radio" name="medicineType" value="มี Box ยา" class="radio-btn text-emerald-500 w-5 h-5" required> <span class="text-sm sm:text-base text-emerald-700 font-bold">มี Box ยา</span></label>
+                <label class="flex items-center justify-center sm:justify-start space-x-2 cursor-pointer"><input type="radio" name="medicineType" value="Box ยาอยู่ที่แผนกอื่น" class="radio-btn text-emerald-500 w-5 h-5" required> <span class="text-sm sm:text-base text-emerald-700 font-bold">Box ยาอยู่ที่แผนกอื่น</span></label>
               </div>
             </div>
           </div>
 
-          <div class="bg-green-50 p-4 rounded-xl">
-            <h3 class="font-bold text-green-800 mb-4 text-lg md:text-xl">ชั้นที่ 2</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-              <div class="p-4 bg-white rounded-lg border"><label class="block text-base md:text-lg font-medium text-gray-700 mb-3">0.9 % NSS (1000 ml 1 ขวด) <span class="text-red-500">*</span></label><div class="flex justify-between"><label class="flex items-center space-x-2"> <input type="radio" name="eq_nss1000" value="✓" class="w-4 h-4 md:w-5 md:h-5 text-emerald-600" required> <span class="text-green-600 text-base md:text-lg">✓</span> </label> <label class="flex items-center space-x-2"> <input type="radio" name="eq_nss1000" value="✗" class="w-4 h-4 md:w-5 md:h-5 text-red-600" required> <span class="text-red-600 text-base md:text-lg">✗</span> </label></div></div>
-              <div class="p-4 bg-white rounded-lg border"><label class="block text-base md:text-lg font-medium text-gray-700 mb-3">Syringe Disposable ขนาดต่างๆ อย่างละ 3 <span class="text-red-500">*</span></label><div class="flex justify-between"><label class="flex items-center space-x-2"> <input type="radio" name="eq_syringe" value="✓" class="w-4 h-4 md:w-5 md:h-5 text-emerald-600" required> <span class="text-green-600 text-base md:text-lg">✓</span> </label> <label class="flex items-center space-x-2"> <input type="radio" name="eq_syringe" value="✗" class="w-4 h-4 md:w-5 md:h-5 text-red-600" required> <span class="text-red-600 text-base md:text-lg">✗</span> </label></div></div>
-              <div class="p-4 bg-white rounded-lg border"><label class="block text-base md:text-lg font-medium text-gray-700 mb-3">เข็มฉีดยา เบอร์18-24 อย่างละ 3 <span class="text-red-500">*</span></label><div class="flex justify-between"><label class="flex items-center space-x-2"> <input type="radio" name="eq_needle" value="✓" class="w-4 h-4 md:w-5 md:h-5 text-emerald-600" required> <span class="text-green-600 text-base md:text-lg">✓</span> </label> <label class="flex items-center space-x-2"> <input type="radio" name="eq_needle" value="✗" class="w-4 h-4 md:w-5 md:h-5 text-red-600" required> <span class="text-red-600 text-base md:text-lg">✗</span> </label></div></div>
-              <div class="p-4 bg-white rounded-lg border"><label class="block text-base md:text-lg font-medium text-gray-700 mb-3">Set IV 3 set <span class="text-red-500">*</span></label><div class="flex justify-between"><label class="flex items-center space-x-2"> <input type="radio" name="eq_set_iv" value="✓" class="w-4 h-4 md:w-5 md:h-5 text-emerald-600" required> <span class="text-green-600 text-base md:text-lg">✓</span> </label> <label class="flex items-center space-x-2"> <input type="radio" name="eq_set_iv" value="✗" class="w-4 h-4 md:w-5 md:h-5 text-red-600" required> <span class="text-red-600 text-base md:text-lg">✗</span> </label></div></div>
-              <div class="p-4 bg-white rounded-lg border"><label class="block text-base md:text-lg font-medium text-gray-700 mb-3">IV Catheter No. 24, 22, 20, 18 อย่างละ 3 <span class="text-red-500">*</span></label><div class="flex justify-between"><label class="flex items-center space-x-2"> <input type="radio" name="eq_iv_cath" value="✓" class="w-4 h-4 md:w-5 md:h-5 text-emerald-600" required> <span class="text-green-600 text-base md:text-lg">✓</span> </label> <label class="flex items-center space-x-2"> <input type="radio" name="eq_iv_cath" value="✗" class="w-4 h-4 md:w-5 md:h-5 text-red-600" required> <span class="text-red-600 text-base md:text-lg">✗</span> </label></div></div>
-              <div class="p-4 bg-white rounded-lg border"><label class="block text-base md:text-lg font-medium text-gray-700 mb-3">Injection plug 3 set <span class="text-red-500">*</span></label><div class="flex justify-between"><label class="flex items-center space-x-2"> <input type="radio" name="eq_inj_plug" value="✓" class="w-4 h-4 md:w-5 md:h-5 text-emerald-600" required> <span class="text-green-600 text-base md:text-lg">✓</span> </label> <label class="flex items-center space-x-2"> <input type="radio" name="eq_inj_plug" value="✗" class="w-4 h-4 md:w-5 md:h-5 text-red-600" required> <span class="text-red-600 text-base md:text-lg">✗</span> </label></div></div>
-              <div class="p-4 bg-white rounded-lg border"><label class="block text-base md:text-lg font-medium text-gray-700 mb-3">Extension Tube 3 set <span class="text-red-500">*</span></label><div class="flex justify-between"><label class="flex items-center space-x-2"> <input type="radio" name="eq_ext_tube" value="✓" class="w-4 h-4 md:w-5 md:h-5 text-emerald-600" required> <span class="text-green-600 text-base md:text-lg">✓</span> </label> <label class="flex items-center space-x-2"> <input type="radio" name="eq_ext_tube" value="✗" class="w-4 h-4 md:w-5 md:h-5 text-red-600" required> <span class="text-red-600 text-base md:text-lg">✗</span> </label></div></div>
-              <div class="p-4 bg-white rounded-lg border"><label class="block text-base md:text-lg font-medium text-gray-700 mb-3">Three - way 3 อัน <span class="text-red-500">*</span></label><div class="flex justify-between"><label class="flex items-center space-x-2"> <input type="radio" name="eq_3way" value="✓" class="w-4 h-4 md:w-5 md:h-5 text-emerald-600" required> <span class="text-green-600 text-base md:text-lg">✓</span> </label> <label class="flex items-center space-x-2"> <input type="radio" name="eq_3way" value="✗" class="w-4 h-4 md:w-5 md:h-5 text-red-600" required> <span class="text-red-600 text-base md:text-lg">✗</span> </label></div></div>
-              <div class="p-4 bg-white rounded-lg border"><label class="block text-base md:text-lg font-medium text-gray-700 mb-3">Transpore 1 นิ้ว 1ม้วน <span class="text-red-500">*</span></label><div class="flex justify-between"><label class="flex items-center space-x-2"> <input type="radio" name="eq_transpore" value="✓" class="w-4 h-4 md:w-5 md:h-5 text-emerald-600" required> <span class="text-green-600 text-base md:text-lg">✓</span> </label> <label class="flex items-center space-x-2"> <input type="radio" name="eq_transpore" value="✗" class="w-4 h-4 md:w-5 md:h-5 text-red-600" required> <span class="text-red-600 text-base md:text-lg">✗</span> </label></div></div>
-              <div class="p-4 bg-white rounded-lg border"><label class="block text-base md:text-lg font-medium text-gray-700 mb-3">Tourniquet 2 อัน <span class="text-red-500">*</span></label><div class="flex justify-between"><label class="flex items-center space-x-2"> <input type="radio" name="eq_tourniquet" value="✓" class="w-4 h-4 md:w-5 md:h-5 text-emerald-600" required> <span class="text-green-600 text-base md:text-lg">✓</span> </label> <label class="flex items-center space-x-2"> <input type="radio" name="eq_tourniquet" value="✗" class="w-4 h-4 md:w-5 md:h-5 text-red-600" required> <span class="text-red-600 text-base md:text-lg">✗</span> </label></div></div>
-            </div>
+          <div class="bg-green-50 p-card sm:p-4 rounded-xl">
+            <h3 class="font-bold text-green-800 mb-3 text-center sm:text-left text-base sm:text-lg">ชั้นที่ 2</h3>
+            <div class="grid grid-cols-1 gap-3" id="floor2-container"></div>
           </div>
 
-          <div class="bg-purple-50 p-4 rounded-xl">
-            <h3 class="font-bold text-purple-800 mb-4 text-lg md:text-xl">ชั้นที่ 3</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-              <div class="p-4 bg-white rounded-lg border"><label class="block text-base md:text-lg font-medium text-gray-700 mb-3">สาย Suction No 14,16 อย่างละ 1 <span class="text-red-500">*</span></label><div class="flex justify-between"><label class="flex items-center space-x-2"> <input type="radio" name="eq_suction" value="✓" class="w-4 h-4 md:w-5 md:h-5 text-emerald-600" required> <span class="text-green-600 text-base md:text-lg">✓</span> </label> <label class="flex items-center space-x-2"> <input type="radio" name="eq_suction" value="✗" class="w-4 h-4 md:w-5 md:h-5 text-red-600" required> <span class="text-red-600 text-base md:text-lg">✗</span> </label></div></div>
-              <div class="p-4 bg-white rounded-lg border"><label class="block text-base md:text-lg font-medium text-gray-700 mb-3">Ambu bag + Mask 1 ชุด <span class="text-red-500">*</span></label><div class="flex justify-between"><label class="flex items-center space-x-2"> <input type="radio" name="eq_ambu" value="✓" class="w-4 h-4 md:w-5 md:h-5 text-emerald-600" required> <span class="text-green-600 text-base md:text-lg">✓</span> </label> <label class="flex items-center space-x-2"> <input type="radio" name="eq_ambu" value="✗" class="w-4 h-4 md:w-5 md:h-5 text-red-600" required> <span class="text-red-600 text-base md:text-lg">✗</span> </label></div></div>
-              <div class="p-4 bg-white rounded-lg border"><label class="block text-base md:text-lg font-medium text-gray-700 mb-3">สายต่อออกซิเจน 1 เส้น <span class="text-red-500">*</span></label><div class="flex justify-between"><label class="flex items-center space-x-2"> <input type="radio" name="eq_o2_line" value="✓" class="w-4 h-4 md:w-5 md:h-5 text-emerald-600" required> <span class="text-green-600 text-base md:text-lg">✓</span> </label> <label class="flex items-center space-x-2"> <input type="radio" name="eq_o2_line" value="✗" class="w-4 h-4 md:w-5 md:h-5 text-red-600" required> <span class="text-red-600 text-base md:text-lg">✗</span> </label></div></div>
-              <div class="p-4 bg-white rounded-lg border"><label class="block text-base md:text-lg font-medium text-gray-700 mb-3">O2 Mask c bag,O2 canular อย่างละ 1 <span class="text-red-500">*</span></label><div class="flex justify-between"><label class="flex items-center space-x-2"> <input type="radio" name="eq_o2_mask" value="✓" class="w-4 h-4 md:w-5 md:h-5 text-emerald-600" required> <span class="text-green-600 text-base md:text-lg">✓</span> </label> <label class="flex items-center space-x-2"> <input type="radio" name="eq_o2_mask" value="✗" class="w-4 h-4 md:w-5 md:h-5 text-red-600" required> <span class="text-red-600 text-base md:text-lg">✗</span> </label></div></div>
-              <div class="p-4 bg-white rounded-lg border"><label class="block text-base md:text-lg font-medium text-gray-700 mb-3">กรรไกร 1 <span class="text-red-500">*</span></label><div class="flex justify-between"><label class="flex items-center space-x-2"> <input type="radio" name="eq_scissors" value="✓" class="w-4 h-4 md:w-5 md:h-5 text-emerald-600" required> <span class="text-green-600 text-base md:text-lg">✓</span> </label> <label class="flex items-center space-x-2"> <input type="radio" name="eq_scissors" value="✗" class="w-4 h-4 md:w-5 md:h-5 text-red-600" required> <span class="text-red-600 text-base md:text-lg">✗</span> </label></div></div>
-              <div class="p-4 bg-white rounded-lg border"><label class="block text-base md:text-lg font-medium text-gray-700 mb-3">ถุงมือ, Mask อย่างละ 5 อัน <span class="text-red-500">*</span></label><div class="flex justify-between"><label class="flex items-center space-x-2"> <input type="radio" name="eq_gloves" value="✓" class="w-4 h-4 md:w-5 md:h-5 text-emerald-600" required> <span class="text-green-600 text-base md:text-lg">✓</span> </label> <label class="flex items-center space-x-2"> <input type="radio" name="eq_gloves" value="✗" class="w-4 h-4 md:w-5 md:h-5 text-red-600" required> <span class="text-red-600 text-base md:text-lg">✗</span> </label></div></div>
-              <div class="p-4 bg-white rounded-lg border"><label class="block text-base md:text-lg font-medium text-gray-700 mb-3">Stethoscope 1 <span class="text-red-500">*</span></label><div class="flex justify-between"><label class="flex items-center space-x-2"> <input type="radio" name="eq_steth" value="✓" class="w-4 h-4 md:w-5 md:h-5 text-emerald-600" required> <span class="text-green-600 text-base md:text-lg">✓</span> </label> <label class="flex items-center space-x-2"> <input type="radio" name="eq_steth" value="✗" class="w-4 h-4 md:w-5 md:h-5 text-red-600" required> <span class="text-red-600 text-base md:text-lg">✗</span> </label></div></div>
-              <div class="p-4 bg-white rounded-lg border"><label class="block text-base md:text-lg font-medium text-gray-700 mb-3">กระดานและปากกา 1 <span class="text-red-500">*</span></label><div class="flex justify-between"><label class="flex items-center space-x-2"> <input type="radio" name="eq_clipboard" value="✓" class="w-4 h-4 md:w-5 md:h-5 text-emerald-600" required> <span class="text-green-600 text-base md:text-lg">✓</span> </label> <label class="flex items-center space-x-2"> <input type="radio" name="eq_clipboard" value="✗" class="w-4 h-4 md:w-5 md:h-5 text-red-600" required> <span class="text-red-600 text-base md:text-lg">✗</span> </label></div></div>
-              <div class="p-4 bg-white rounded-lg border"><label class="block text-base md:text-lg font-medium text-gray-700 mb-3">CPR reccord <span class="text-red-500">*</span></label><div class="flex justify-between"><label class="flex items-center space-x-2"> <input type="radio" name="eq_cpr" value="✓" class="w-4 h-4 md:w-5 md:h-5 text-emerald-600" required> <span class="text-green-600 text-base md:text-lg">✓</span> </label> <label class="flex items-center space-x-2"> <input type="radio" name="eq_cpr" value="✗" class="w-4 h-4 md:w-5 md:h-5 text-red-600" required> <span class="text-red-600 text-base md:text-lg">✗</span> </label></div></div>
-            </div>
+          <div class="bg-purple-50 p-card sm:p-4 rounded-xl">
+            <h3 class="font-bold text-purple-800 mb-3 text-center sm:text-left text-base sm:text-lg">ชั้นที่ 3</h3>
+            <div class="grid grid-cols-1 gap-3" id="floor3-container"></div>
           </div>
 
-          <div class="bg-gray-50 p-4 rounded-xl">
-            <h3 class="font-bold text-gray-800 mb-4 text-lg md:text-xl">👤 ข้อมูลผู้ตรวจสอบ</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="bg-gray-50 p-card sm:p-4 rounded-xl">
+            <h3 class="font-bold text-gray-800 mb-3 text-center sm:text-left text-base sm:text-lg">👤 ข้อมูลการตรวจ</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <div>
-                <div class="flex items-center justify-between mb-3"><label for="inspector" class="block text-base md:text-lg font-semibold text-gray-700">ผู้ตรวจสอบ <span class="text-red-500">*</span></label> <button type="button" id="manage-inspectors-btn" class="text-sm md:text-base bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded-lg transition-colors"> จัดการรายชื่อ </button></div>
-                <select id="inspector" class="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:border-emerald-500 focus:outline-none transition-colors text-base md:text-lg" required> <option value="">เลือกผู้ตรวจสอบ</option> </select>
+                <div class="flex justify-between items-center mb-2">
+                  <label class="text-base sm:text-lg font-semibold text-gray-700">ผู้ตรวจสอบ <span class="text-red-500">*</span></label>
+                  <button type="button" onclick="document.getElementById('inspector-modal').classList.remove('hidden')" class="text-sm text-blue-600 bg-blue-50 px-3 py-1 rounded border border-blue-200">+ เพิ่มรายชื่อ</button>
+                </div>
+                <div class="flex gap-2">
+                  <select id="inspector" class="w-full p-3 border border-gray-300 rounded-lg text-base text-center sm:text-left focus:outline-none focus:border-emerald-500" required><option value="">เลือกชื่อผู้ตรวจสอบ</option></select>
+                  <button type="button" onclick="deleteSelectedInspector()" class="bg-red-50 text-red-500 border border-red-200 px-4 rounded-lg hover:bg-red-100 flex items-center justify-center text-lg" title="ลบชื่อที่กำลังเลือก">🗑️</button>
+                </div>
               </div>
               <div>
-                <label for="signature" class="block text-base md:text-lg font-semibold text-gray-700 mb-3">ลายเซ็น <span class="text-red-500">*</span></label>
-                <canvas id="signature-pad" class="w-full h-28 md:h-32 border-2 border-gray-200 rounded-xl bg-white cursor-crosshair" required></canvas>
-                <div class="flex gap-2 mt-2"><button type="button" id="clear-signature" class="text-sm md:text-base bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-lg">ล้างลายเซ็น</button></div>
+                <div class="flex justify-between items-center mb-2">
+                  <label class="text-base sm:text-lg font-semibold text-gray-700">ลายเซ็น <span class="text-red-500">*</span></label>
+                  <button type="button" id="clear-signature" class="text-sm text-red-600 bg-red-50 px-3 py-1 rounded border border-red-200">ล้างลายเซ็น</button>
+                </div>
+                <canvas id="signature-pad" class="w-full h-28 border border-gray-300 rounded-lg bg-white" required></canvas>
               </div>
             </div>
           </div>
 
-          <div class="flex justify-end"><button type="submit" id="submit-inspection" class="bg-emerald-500 hover:bg-emerald-600 text-white font-semibold py-4 px-8 rounded-xl transition-all duration-200 flex items-center gap-3 shadow-md text-base md:text-lg">
-            <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> บันทึกการตรวจสอบ </button>
+          <div class="flex justify-center sm:justify-end gap-3 pt-2">
+            <button type="button" id="cancel-edit-btn" onclick="cancelEditInspection()" class="hidden bg-gray-400 hover:bg-gray-500 text-white font-semibold py-3 px-6 rounded-xl shadow-md text-base sm:text-lg transition-colors">
+              ยกเลิกแก้ไข
+            </button>
+            <button type="submit" id="submit-inspection" class="w-full sm:w-auto bg-emerald-500 hover:bg-emerald-600 text-white font-semibold py-3 px-10 rounded-xl shadow-md text-base sm:text-lg transition-colors">
+              บันทึกการตรวจสอบ
+            </button>
           </div>
         </div>
       </form>
     </div>
 
-    <div class="bg-white rounded-2xl shadow-lg overflow-hidden mt-6">
-      <div class="p-6 border-b border-gray-200">
-        <div class="flex flex-col gap-4">
-          <h2 class="text-xl font-bold text-gray-800 flex items-center gap-2"><span class="text-2xl">📊</span> รายการตรวจสอบรถ Emergency</h2>
-          <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3"><span class="text-sm font-medium text-gray-600 whitespace-nowrap">กรองข้อมูล:</span>
-            <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto"><select id="month-filter" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm md:text-base min-w-[120px]"> <option value="">ทุกเดือน</option> </select> <select id="year-filter" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm md:text-base min-w-[100px]"> <option value="">ทุกปี</option> </select></div>
-          </div>
+    <div class="bg-white rounded-xl shadow-sm overflow-hidden mt-4">
+      <div class="p-card sm:p-4 border-b border-gray-100 flex flex-col sm:flex-row justify-between items-center gap-3">
+        <h2 class="text-sm sm:text-lg font-bold text-gray-800">📊 ประวัติการตรวจล่าสุด</h2>
+        <div class="flex gap-2">
+          <select id="filter-month" class="p-2 border rounded text-sm focus:outline-none focus:border-emerald-500 text-center"></select>
+          <select id="filter-year" class="p-2 border rounded text-sm focus:outline-none focus:border-emerald-500 text-center"></select>
         </div>
       </div>
-      <div class="p-6">
-        <div class="overflow-x-auto">
-          <table class="table-auto bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 mx-auto w-full">
-            <thead class="bg-gradient-to-r from-emerald-500 to-emerald-600 text-white">
-              <tr>
-                <th class="px-4 py-3 text-center font-semibold whitespace-nowrap rounded-tl-2xl">วันที่</th>
-                <th class="px-4 py-3 text-center font-semibold whitespace-nowrap">เวร</th>
-                <th class="px-4 py-3 text-center font-semibold whitespace-nowrap">ผู้ตรวจสอบ</th>
-                <th class="px-4 py-3 text-center font-semibold whitespace-nowrap w-[120px]">เซ็นต์ชื่อ</th>
-                <th class="px-4 py-3 text-center font-semibold whitespace-nowrap rounded-tr-2xl">จัดการ</th>
-              </tr>
-            </thead>
-            <tbody id="inspection-table-body" class="divide-y divide-gray-100">
-            </tbody>
-          </table>
-        </div>
-      </div>
-      <div id="inspection-empty-state" class="text-center py-12 text-gray-400 hidden">
-        <svg class="w-16 h-16 mx-auto mb-4 opacity-50" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-        <p class="text-lg font-medium">ยังไม่มีรายการตรวจสอบ</p>
-        <p class="text-sm">บันทึกการตรวจสอบเพื่อดูรายการที่นี่</p>
+      <div class="overflow-x-auto">
+        <table class="w-full text-center">
+          <thead class="bg-gray-100 text-gray-600 text-xs sm:text-sm">
+            <tr>
+              <th class="px-3 py-2 text-left">วัน</th>
+              <th class="px-3 py-2 text-left">วันที่ตรวจ</th>
+              <th class="px-3 py-2">ผู้ตรวจ</th>
+              <th class="px-3 py-2 text-center w-20">ลายเซ็น</th>
+              <th class="px-3 py-2 text-center w-24">จัดการ</th>
+            </tr>
+          </thead>
+          <tbody id="inspection-table-body" class="divide-y divide-gray-100 text-xs sm:text-sm"></tbody>
+        </table>
       </div>
     </div>
   </div>
 
-  <div id="medicine-modal" class="fixed inset-0 bg-black bg-opacity-50 modal-backdrop hidden z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
-      <div class="p-6 border-b border-gray-200">
-        <div class="flex items-center justify-between">
-          <h3 id="modal-title" class="text-xl font-bold text-gray-800">เพิ่มยา/เวชภัณฑ์ใหม่</h3><button id="close-modal" class="text-gray-400 hover:text-gray-600 p-2"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
-        </div>
+  <div id="medicine-modal" class="fixed inset-0 bg-black/50 modal-backdrop hidden z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto relative">
+      <button type="button" onclick="hideAllModals()" class="absolute top-2 right-4 text-gray-400 hover:text-red-500 text-3xl leading-none font-bold">&times;</button>
+      <div class="p-4 border-b border-gray-100">
+        <h3 id="modal-title" class="font-bold text-center text-lg w-full">เพิ่ม/แก้ไขยา</h3>
       </div>
-      <form id="medicine-form" class="p-6 space-y-4">
-        <div><label for="medicine-name" class="block text-sm font-semibold text-gray-700 mb-2">💊 ชื่อยา/เวชภัณฑ์</label> <input type="text" id="medicine-name" required class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-emerald-500 focus:outline-none transition-colors"></div>
-        <div><label for="medicine-type" class="block text-sm font-semibold text-gray-700 mb-2">🏥 ประเภท</label> <select id="medicine-type" required class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-emerald-500 focus:outline-none transition-colors"> <option value="">เลือกประเภท</option> <option value="ยา">💊 ยา</option> <option value="อุปกรณ์ทางการแพทย์">🏥 อุปกรณ์ทางการแพทย์</option> </select></div>
-        <div><label for="expiry-date" class="block text-sm font-semibold text-gray-700 mb-2">📅 วันหมดอายุ</label> <input type="date" id="expiry-date" required class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-emerald-500 focus:outline-none transition-colors"></div>
-        <div class="flex gap-3 pt-4"><button type="button" id="cancel-btn" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-3 px-6 rounded-xl transition-colors"> ยกเลิก </button> <button type="submit" id="save-btn" class="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold py-3 px-6 rounded-xl transition-colors"> บันทึก </button></div>
+      <form id="medicine-form" class="p-4 space-y-4">
+        <div><label class="block text-base font-semibold text-gray-700 mb-2 text-center sm:text-left">💊 ชื่อยา/เวชภัณฑ์</label><input type="text" id="medicine-name" required class="w-full p-3 border rounded-lg text-base text-center sm:text-left"></div>
+        <div><label class="block text-base font-semibold text-gray-700 mb-2 text-center sm:text-left">🏥 ประเภท</label><select id="medicine-type" required class="w-full p-3 border rounded-lg text-base text-center sm:text-left"><option value="ยา">💊 ยา</option><option value="อุปกรณ์ทางการแพทย์">🏥 อุปกรณ์ทางการแพทย์</option></select></div>
+        <div><label class="block text-base font-semibold text-gray-700 mb-2 text-center sm:text-left">📅 วันหมดอายุ</label><input type="date" id="expiry-date" required class="w-full p-3 border rounded-lg text-base text-center sm:text-left"></div>
+        <div class="flex gap-2 pt-3">
+          <button type="button" onclick="hideAllModals()" class="flex-1 bg-gray-200 text-gray-700 py-3 rounded-lg text-base font-semibold">ยกเลิก</button>
+          <button type="submit" class="flex-1 bg-emerald-500 text-white py-3 rounded-lg text-base font-semibold">บันทึก</button>
+        </div>
       </form>
     </div>
   </div>
 
-  <div id="detail-modal" class="fixed inset-0 bg-black bg-opacity-50 modal-backdrop hidden z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full">
-      <div class="p-6 border-b border-gray-200">
-        <div class="flex items-center justify-between">
-          <h3 class="text-xl font-bold text-gray-800">รายละเอียด</h3><button id="close-detail-modal" class="text-gray-400 hover:text-gray-600 p-2"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
-        </div>
+  <div id="detail-modal" class="fixed inset-0 bg-black/50 modal-backdrop hidden z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-2xl w-full max-w-sm relative">
+      <button type="button" onclick="hideAllModals()" class="absolute top-2 right-4 text-gray-400 hover:text-red-500 text-3xl leading-none font-bold">&times;</button>
+      <div class="p-4 border-b border-gray-100">
+        <h3 class="font-bold text-center text-lg w-full">รายละเอียดยา</h3>
       </div>
-      <div id="detail-content" class="p-6 space-y-4"></div>
+      <div id="detail-content" class="p-4 space-y-4 text-center"></div>
     </div>
   </div>
 
-  <div id="inspection-detail-modal" class="fixed inset-0 bg-black bg-opacity-50 modal-backdrop hidden z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-      <div class="p-6 border-b border-gray-200">
-        <div class="flex items-center justify-between">
-          <h3 class="text-xl font-bold text-gray-800">รายละเอียดการตรวจสอบ</h3><button id="close-inspection-detail-modal" class="text-gray-400 hover:text-gray-600 p-2"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
-        </div>
+  <div id="insp-detail-modal" class="fixed inset-0 bg-black/50 modal-backdrop hidden z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-2xl w-full max-w-md relative">
+      <button type="button" onclick="hideAllModals()" class="absolute top-2 right-4 text-gray-400 hover:text-red-500 text-3xl leading-none font-bold">&times;</button>
+      <div class="p-4 border-b border-gray-100">
+        <h3 class="font-bold text-center text-lg w-full">รายละเอียดการตรวจสอบ</h3>
       </div>
-      <div id="inspection-detail-content" class="p-6"></div>
+      <div id="insp-detail-content" class="p-4 text-center text-base space-y-3"></div>
     </div>
   </div>
 
-  <div id="inspector-modal" class="fixed inset-0 bg-black bg-opacity-50 modal-backdrop hidden z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
-      <div class="p-6 border-b border-gray-200">
-        <div class="flex items-center justify-between">
-          <h3 class="text-xl font-bold text-gray-800">จัดการรายชื่อผู้ตรวจสอบ</h3><button id="close-inspector-modal" class="text-gray-400 hover:text-gray-600 p-2"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
-        </div>
+  <div id="inspector-modal" class="fixed inset-0 bg-black/50 modal-backdrop hidden z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-2xl w-full max-w-sm flex flex-col relative">
+      <button onclick="hideAllModals()" class="absolute top-2 right-4 text-gray-400 hover:text-red-500 text-3xl leading-none font-bold">&times;</button>
+      <div class="p-4 border-b border-gray-100">
+        <h3 class="font-bold text-lg text-center w-full">เพิ่มรายชื่อผู้ตรวจ</h3>
       </div>
-      <div class="p-6">
-        <div class="mb-6">
-          <h4 class="font-semibold text-gray-800 mb-3">เพิ่มผู้ตรวจสอบใหม่</h4>
-          <form id="add-inspector-form" class="flex gap-2"><input type="text" id="new-inspector-name" placeholder="ชื่อผู้ตรวจสอบ" class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500" required> <button type="submit" class="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-lg transition-colors"> เพิ่ม </button></form>
-        </div>
-        <div>
-          <h4 class="font-semibold text-gray-800 mb-3">รายชื่อผู้ตรวจสอบ</h4>
-          <div id="inspector-list" class="space-y-2 max-h-60 overflow-y-auto"></div>
-        </div>
+      <div class="p-4 flex-1">
+        <form id="add-inspector-form" class="flex flex-col gap-3">
+          <input type="text" id="new-inspector-name" placeholder="ระบุชื่อ-นามสกุล..." class="w-full p-4 border rounded-lg text-base text-center focus:outline-none focus:border-emerald-500" required>
+          <button type="submit" class="w-full bg-emerald-500 text-white py-3 rounded-lg text-base font-semibold">บันทึกชื่อใหม่</button>
+        </form>
       </div>
     </div>
   </div>
 
   <script>
-    // ใช้ URL เดิมตามที่คุณแนบมาใน HTML ต้นฉบับ
-    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwzcfyGjD0arLFXlH76aupwgZrjNL0m4xsQUuEhRnqw6xa6k9T4X7GPPqPvzNvcEagzJw/exec';
-    const INSPECTION_SHEET_URL = 'https://script.google.com/macros/s/AKfycbwzcfyGjD0arLFXlH76aupwgZrjNL0m4xsQUuEhRnqw6xa6k9T4X7GPPqPvzNvcEagzJw/exec';
-    
-    const defaultConfig = {
-      app_title: 'ระบบตรวจสอบยาและเวชภัณฑ์รถ Emergency OPD71 A',
-      add_button_text: 'เพิ่มยา/เวชภัณฑ์ใหม่',
-      primary_color: '#10b981',
-      surface_color: '#ffffff',
-      text_color: '#1f2937',
-      font_family: 'Prompt',
-      font_size: 16
+    // =========================================================
+    // 🔗 API Wrapper สำหรับติดต่อไปยัง Google Apps Script Backend
+    // โค้ดนี้เช็คอัตโนมัติ ถ้าอยู่บน Google ใช้ google.script.run ถ้าอยู่บน GitHub ใช้ fetch()
+    // =========================================================
+    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyd0mY9o71ezrXxaRJE8-ICCaZHwVOzH7v3XT4v1aP_aQbz6qJFg4Wm_bVfv773Kr6LRg/exec';
+
+    function apiCall(funcName, payload = null) {
+      return new Promise((resolve, reject) => {
+        if (typeof google !== 'undefined' && google.script && google.script.run) {
+          if (payload !== null) {
+            google.script.run.withSuccessHandler(resolve).withFailureHandler(reject)[funcName](payload);
+          } else {
+            google.script.run.withSuccessHandler(resolve).withFailureHandler(reject)[funcName]();
+          }
+        } else {
+          const formData = new FormData();
+          formData.append('action', funcName);
+          if (payload !== null) formData.append('data', JSON.stringify(payload));
+          fetch(WEB_APP_URL, { method: 'POST', body: formData })
+            .then(res => res.json())
+            .then(res => {
+               if (res.success === false && !res.data) reject(new Error(res.error));
+               else if (res.data !== undefined) resolve(res.data);
+               else resolve(res);
+            }).catch(err => reject(err));
+        }
+      });
+    }
+
+    const equipmentData = {
+      floor2: ['0.9 % NSS (1000 ml 1 ขวด)', 'Syringe Disposable ขนาดต่างๆ อย่างละ 3', 'เข็มฉีดยา เบอร์18-24 อย่างละ 3', 'Set IV 3 set', 'IV Catheter No. 24, 22, 20, 18 อย่างละ 3', 'Injection plug 3 set', 'Extension Tube 3 set', 'Three - way 3 อัน', 'Transpore 1 นิ้ว 1ม้วน', 'Tourniquet 2 อัน'],
+      floor3: ['สาย Suction No 14,16 อย่างละ 1', 'Ambu bag + Mask 1 ชุด', 'สายต่อออกซิเจน 1 เส้น', 'O2 Mask c bag,O2 canular อย่างละ 1', 'กรรไกร 1', 'ถุงมือ, Mask อย่างละ 5 อัน', 'Stethoscope 1', 'กระดานและปากกา 1', 'CPR reccord']
     };
 
-    let allMedicines = [];
-    let editingMedicine = null;
     let signaturePad = null;
-    let inspectorNames = [];
+    let allMedicines = [];
     let allInspections = [];
-    let editingInspection = null;
+    let inspectorNames = [];
+    let editingMedicine = null;
+    let editingInspectionId = null;
 
-    function updateConnectionStatus(status, message) {
-      const indicator = document.getElementById('status-indicator');
-      const text = document.getElementById('status-text');
-      if (status === 'connected') {
-        indicator.className = 'w-2 h-2 rounded-full bg-green-500';
-        text.textContent = message || 'เชื่อมต่อ Google Sheets สำเร็จ';
-        text.className = 'text-green-600';
-      } else if (status === 'error') {
-        indicator.className = 'w-2 h-2 rounded-full bg-red-500';
-        text.textContent = message || 'เชื่อมต่อ Google Sheets ไม่สำเร็จ';
-        text.className = 'text-red-600';
-      } else if (status === 'loading') {
-        indicator.className = 'w-2 h-2 rounded-full bg-yellow-500 animate-pulse';
-        text.textContent = message || 'กำลังเชื่อมต่อ...';
-        text.className = 'text-yellow-600';
-      }
+    setInterval(() => {
+      const now = new Date();
+      document.getElementById('current-datetime').innerText = now.toLocaleDateString('th-TH', { year:'numeric', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit', second:'2-digit' });
+    }, 1000);
+
+    function setStatus(status, text) {
+      const ind = document.getElementById('status-indicator');
+      const txt = document.getElementById('status-text');
+      if (status === 'connected') { ind.className = 'w-2 h-2 rounded-full bg-green-500'; txt.className = 'text-xs text-green-600'; }
+      else if (status === 'error') { ind.className = 'w-2 h-2 rounded-full bg-red-500'; txt.className = 'text-xs text-red-600'; }
+      else if (status === 'loading') { ind.className = 'w-2 h-2 rounded-full bg-yellow-500 animate-pulse'; txt.className = 'text-xs text-yellow-600'; }
+      txt.textContent = text || '';
     }
 
-    function calculateDaysAndStatus(expiryDate, type) {
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      const expiry = new Date(expiryDate);
-      expiry.setHours(0, 0, 0, 0);
-      const diffTime = expiry - today;
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-      let status = 'ปกติ';
-      let exchangeDate = new Date(expiry);
-      if (type === 'ยา') {
-        exchangeDate.setMonth(exchangeDate.getMonth() - 7);
-        if (diffDays < 1) status = 'หมดอายุห้ามใช้';
-        else if (diffDays <= 6) status = 'ใกล้หมดอายุ';
-        else if (diffDays <= 210) status = 'ควรแลกยา';
-      } else {
-        exchangeDate.setDate(exchangeDate.getDate() - 14);
-        if (diffDays <= 1) status = 'หมดอายุ';
-        else if (diffDays <= 7) status = 'อุปกรณ์ใกล้หมดอายุ';
-        else if (diffDays <= 14) status = 'ควรเปลี่ยนอุปกรณ์';
-      }
-      return { daysRemaining: diffDays, status: status, exchangeDate: exchangeDate.toISOString().split('T')[0] };
+    function hideAllModals() {
+      document.querySelectorAll('.modal-backdrop').forEach(el => el.classList.add('hidden'));
     }
 
-    function getStatusColor(status) {
-      if (!status) return 'bg-gray-100 text-gray-700 border-gray-200';
-      if (status.includes('หมดอายุ') || status === 'หมดอายุห้ามใช้') return 'bg-red-100 text-red-700 border-red-200';
-      else if (status.includes('ใกล้หมดอายุ') || status.includes('อุปกรณ์ใกล้หมดอายุ')) return 'bg-yellow-100 text-yellow-700 border-yellow-200';
-      else if (status.includes('ควร')) return 'bg-orange-100 text-orange-700 border-orange-200';
-      return 'bg-emerald-100 text-emerald-700 border-emerald-200';
-    }
-
-    function renderMedicineTable(medicines) {
-      const tableBody = document.getElementById('medicine-table-body');
-      const emptyState = document.getElementById('empty-state');
-      if (!medicines || medicines.length === 0) {
-        tableBody.innerHTML = '';
-        emptyState.classList.remove('hidden');
-        return;
-      }
-      emptyState.classList.add('hidden');
-      const statusOrder = { 'หมดอายุห้ามใช้': 1, 'หมดอายุ': 1, 'ใกล้หมดอายุ': 2, 'อุปกรณ์ใกล้หมดอายุ': 2, 'ควรแลกยา': 3, 'ควรเปลี่ยนอุปกรณ์': 3, 'ปกติ': 4 };
-      const sortedMedicines = [...medicines].sort((a, b) => {
-        const orderA = statusOrder[a.status] || 4;
-        const orderB = statusOrder[b.status] || 4;
-        if (orderA !== orderB) return orderA - orderB;
-        return a.days_remaining - b.days_remaining;
-      });
-      tableBody.innerHTML = sortedMedicines.map((medicine, index) => `
-        <tr class="hover:bg-gray-50 transition-all duration-200 ${index === sortedMedicines.length - 1 ? 'rounded-b-2xl' : ''}" data-row-index="${index}">
-          <td class="px-6 py-3 ${index === sortedMedicines.length - 1 ? 'rounded-bl-2xl' : ''}">
-            <div>
-              <div class="font-semibold text-gray-800">${medicine.medicine_name || ''}</div>
-              <div class="text-xs text-gray-500">${medicine.expiry_date ? new Date(medicine.expiry_date).toLocaleDateString('th-TH', { day: '2-digit', month: '2-digit', year: 'numeric' }) : ''}</div>
+    function generateFormUI() {
+      let counter = 1;
+      const createRadios = (items, containerId) => {
+        document.getElementById(containerId).innerHTML = items.map((item) => `
+          <div class="p-3 sm:p-4 bg-white rounded-lg border border-gray-100 shadow-sm flex flex-col justify-center">
+            <label class="block text-sm sm:text-base font-medium text-gray-800 radio-label mb-3 text-center break-words w-full">${item}</label>
+            <div class="flex justify-between w-full px-2 sm:px-6">
+              <label class="flex items-center space-x-2 cursor-pointer"><input type="radio" name="eq_${counter}" value="✓" class="radio-btn text-emerald-500 w-5 h-5" required> <span class="text-sm sm:text-base text-green-600 font-bold">✓ มี</span></label>
+              <label class="flex items-center space-x-2 cursor-pointer"><input type="radio" name="eq_${counter++}" value="✗" class="radio-btn text-red-500 w-5 h-5" required> <span class="text-sm sm:text-base text-red-600 font-bold">✗ ไม่มี</span></label>
             </div>
-          </td>
-          <td class="px-6 py-3 text-center">
-            <div class="inline-flex flex-col items-center"><div class="font-bold text-xl ${medicine.days_remaining <= 7 ? 'text-red-600' : medicine.days_remaining <= 30 ? 'text-yellow-600' : 'text-emerald-600'}">${medicine.days_remaining || 0}</div></div>
-          </td>
-          <td class="px-6 py-3 text-center">
-            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(medicine.status)} shadow-sm">${medicine.status || 'ไม่ทราบ'}</span>
-          </td>
-          <td class="px-6 py-3 text-center ${index === sortedMedicines.length - 1 ? 'rounded-br-2xl' : ''}">
-            <div class="flex items-center justify-center gap-1">
-              <button class="view-btn bg-blue-100 hover:bg-blue-200 text-blue-600 p-3 rounded-lg transition-all duration-200 hover:scale-105 shadow-sm" data-row-index="${index}" title="ดูรายละเอียด"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg></button>
-              <button class="edit-btn bg-emerald-100 hover:bg-emerald-200 text-emerald-600 p-3 rounded-lg transition-all duration-200 hover:scale-105 shadow-sm" data-row-index="${index}" title="แก้ไข"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg></button>
-              <button class="delete-btn bg-red-100 hover:bg-red-200 text-red-600 p-3 rounded-lg transition-all duration-200 hover:scale-105 shadow-sm" data-row-index="${index}" title="ลบ"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>
-            </div>
-          </td>
-        </tr>
-      `).join('');
-
-      document.querySelectorAll('.view-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          const rowIndex = parseInt(e.currentTarget.getAttribute('data-row-index'));
-          if (sortedMedicines[rowIndex]) showDetailModal(sortedMedicines[rowIndex]);
-        });
-      });
-      document.querySelectorAll('.edit-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          const rowIndex = parseInt(e.currentTarget.getAttribute('data-row-index'));
-          if (sortedMedicines[rowIndex]) showEditModal(sortedMedicines[rowIndex]);
-        });
-      });
-      document.querySelectorAll('.delete-btn').forEach(btn => {
-        btn.addEventListener('click', async (e) => {
-          const rowIndex = parseInt(e.currentTarget.getAttribute('data-row-index'));
-          if (sortedMedicines[rowIndex]) await deleteMedicine(sortedMedicines[rowIndex]);
-        });
-      });
-    }
-
-    function showDetailModal(medicine) {
-      const modal = document.getElementById('detail-modal');
-      const content = document.getElementById('detail-content');
-      content.innerHTML = `
-        <div class="space-y-4">
-          <div class="flex items-center gap-3 p-4 bg-gray-50 rounded-xl"><span class="text-3xl">${medicine.type === 'ยา' ? '💊' : '🏥'}</span><div><h4 class="font-bold text-lg">${medicine.medicine_name}</h4><p class="text-sm text-gray-600">${medicine.type}</p></div></div>
-          <div class="grid grid-cols-2 gap-4">
-            <div class="p-3 bg-blue-50 rounded-lg"><p class="text-xs text-blue-600 font-semibold">วันหมดอายุ</p><p class="font-bold">${new Date(medicine.expiry_date).toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' })}</p></div>
-            <div class="p-3 bg-orange-50 rounded-lg"><p class="text-xs text-orange-600 font-semibold">วันที่ต้องแลก</p><p class="font-bold">${new Date(medicine.exchange_date).toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' })}</p></div>
-            <div class="p-3 bg-emerald-50 rounded-lg"><p class="text-xs text-emerald-600 font-semibold">จำนวนวันที่เหลือ</p><p class="font-bold text-2xl">${medicine.days_remaining} วัน</p></div>
-            <div class="p-3 bg-purple-50 rounded-lg"><p class="text-xs text-purple-600 font-semibold">สถานะ</p><span class="inline-block mt-1 px-3 py-1 rounded-full text-xs font-semibold border-2 ${getStatusColor(medicine.status)}">${medicine.status}</span></div>
           </div>
+        `).join('');
+      };
+      createRadios(equipmentData.floor2, 'floor2-container'); 
+      createRadios(equipmentData.floor3, 'floor3-container'); 
+    }
+
+    async function fetchInitialData() {
+      try {
+        setStatus('loading', 'กำลังโหลดข้อมูลทั้งหมด...');
+        const data = await apiCall('getInitialData');
+        
+        allMedicines = data.medicines || [];
+        inspectorNames = data.names || [];
+        allInspections = data.inspections || [];
+
+        renderMedicinesData();
+        renderNamesData();
+        renderInspections();
+        
+        setStatus('connected', 'พร้อมใช้งาน');
+        apiCall('updateAllMedicineDays'); 
+      } catch (err) { setStatus('error', 'การเชื่อมต่อผิดพลาด'); }
+    }
+
+    async function fetchMedicinesOnly() {
+      try {
+        setStatus('loading', 'กำลังอัปเดตยา...');
+        allMedicines = await apiCall('getMedicines');
+        renderMedicinesData();
+        setStatus('connected', 'พร้อมใช้งาน');
+      } catch(err) { setStatus('error', 'ผิดพลาด'); }
+    }
+
+    function renderMedicinesData() {
+      const tbody = document.getElementById('medicine-table-body');
+      if(allMedicines && allMedicines.length > 0) {
+        
+        const getStatusWeight = (status) => {
+          if(!status) return 3;
+          if(status.includes('หมดอายุห้ามใช้') || status.includes('หมดอายุ') || status.includes('ไม่ผ่าน')) return 1;
+          if(status.includes('ควร') || status.includes('ใกล้')) return 2;
+          return 3;
+        };
+        
+        allMedicines.sort((a, b) => {
+          const wA = getStatusWeight(a.status);
+          const wB = getStatusWeight(b.status);
+          if(wA !== wB) return wA - wB; 
+          
+          const da = a.days_remaining === null ? 9999 : parseInt(a.days_remaining);
+          const db = b.days_remaining === null ? 9999 : parseInt(b.days_remaining);
+          return da - db;
+        });
+
+        tbody.innerHTML = allMedicines.map((med, index) => {
+          const d = med.days_remaining;
+          let cls = '';
+          const statusTxt = med.status || 'ปกติ';
+          
+          if (statusTxt.includes('หมดอายุ') || statusTxt.includes('ไม่ผ่าน')) {
+            cls = 'bg-red-100 text-red-700 border border-red-300 animate-pulse';
+          } else if (statusTxt.includes('ควร') || statusTxt.includes('ใกล้')) {
+            cls = 'bg-yellow-100 text-yellow-700 border border-yellow-300 animate-pulse';
+          } else {
+            cls = 'bg-emerald-50 text-emerald-600 border border-emerald-200';
+          }
+
+          return `
+            <tr class="border-b border-gray-50">
+              <td class="px-3 py-2 text-left truncate max-w-[120px] mx-auto">${med.medicine_name}</td>
+              <td class="px-3 py-2 text-center font-bold ${d !== null && d <= 30 ? 'text-red-600' : 'text-emerald-600'}">${d !== null ? d : '-'}</td>
+              <td class="px-3 py-2 text-center"><span class="px-2 py-0.5 rounded text-[10px] sm:text-xs font-bold ${cls}">${statusTxt}</span></td>
+              <td class="px-3 py-2 text-center">
+                <button onclick="viewMed(${index})" class="text-blue-500 text-xl hover:scale-110" title="จัดการ">👁️</button>
+              </td>
+            </tr>`;
+        }).join('');
+      } else tbody.innerHTML = '<tr><td colspan="4" class="text-center py-4 text-gray-400 text-xs">ไม่มีข้อมูลยา</td></tr>';
+    }
+
+    function viewMed(index) {
+      const med = allMedicines[index];
+      document.getElementById('detail-content').innerHTML = `
+        <div class="p-3 bg-gray-50 rounded-lg mb-3 mx-auto text-base"><strong>${med.medicine_name}</strong> <br><span class="text-sm text-gray-500">ประเภท: ${med.type}</span></div>
+        <div class="grid grid-cols-2 gap-3 text-base mx-auto">
+          <div class="p-3 border rounded bg-blue-50"><p class="text-sm text-gray-500">วันหมดอายุ</p><p class="font-bold">${med.expiry_date}</p></div>
+          <div class="p-3 border rounded bg-orange-50"><p class="text-sm text-gray-500">วันที่ต้องแลก</p><p class="font-bold">${med.exchange_date}</p></div>
+          <div class="p-3 border rounded bg-emerald-50"><p class="text-sm text-gray-500">วันคงเหลือ</p><p class="font-bold text-xl">${med.days_remaining !== null ? med.days_remaining : '-'}</p></div>
+          <div class="p-3 border rounded"><p class="text-sm text-gray-500">สถานะ</p><p class="font-bold text-red-500">${med.status || 'ปกติ'}</p></div>
+        </div>
+        <div class="flex gap-2 mt-5">
+          <button onclick="editMed(${index})" class="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white py-3 rounded-lg text-base font-semibold">✏️ แก้ไข</button>
+          <button onclick="delMed(${index})" class="flex-1 bg-red-500 hover:bg-red-600 text-white py-3 rounded-lg text-base font-semibold">🗑️ ลบ</button>
         </div>
       `;
-      modal.classList.remove('hidden');
+      document.getElementById('detail-modal').classList.remove('hidden');
     }
 
-    function showEditModal(medicine = null) {
-      editingMedicine = medicine;
-      const modal = document.getElementById('medicine-modal');
-      const title = document.getElementById('modal-title');
-      const form = document.getElementById('medicine-form');
-      title.textContent = medicine ? 'แก้ไขยา/เวชภัณฑ์' : 'เพิ่มยา/เวชภัณฑ์ใหม่';
-      if (medicine) {
-        document.getElementById('medicine-name').value = medicine.medicine_name;
-        document.getElementById('medicine-type').value = medicine.type;
-        let expiryDate = medicine.expiry_date;
-        if (expiryDate) {
-          if (expiryDate.includes('T')) expiryDate = expiryDate.split('T')[0];
-          document.getElementById('expiry-date').value = expiryDate;
-        }
-      } else {
-        form.reset();
+    function editMed(index) {
+      hideAllModals();
+      editingMedicine = allMedicines[index];
+      document.getElementById('modal-title').innerText = 'แก้ไขยา';
+      document.getElementById('medicine-name').value = editingMedicine.medicine_name;
+      document.getElementById('medicine-type').value = editingMedicine.type;
+      
+      let exp = editingMedicine.expiry_date;
+      if(exp && exp.includes('/')) {
+        const parts = exp.split('/');
+        if(parts.length===3) document.getElementById('expiry-date').value = `${parts[2]}-${parts[0].padStart(2,'0')}-${parts[1].padStart(2,'0')}`;
+      } else { document.getElementById('expiry-date').value = exp; }
+      document.getElementById('medicine-modal').classList.remove('hidden');
+    }
+
+    async function delMed(index) {
+      const med = allMedicines[index];
+      if(confirm(`ยืนยันการลบ ${med.medicine_name}?`)) {
+        hideAllModals();
+        Swal.fire({ title: 'กำลังลบ...', showConfirmButton: false });
+        await apiCall('deleteMedicine', med.id);
+        fetchMedicinesOnly();
+        Swal.close();
       }
-      modal.classList.remove('hidden');
     }
 
-    function hideModal() {
-      document.getElementById('medicine-modal').classList.add('hidden');
-      document.getElementById('detail-modal').classList.add('hidden');
-      document.getElementById('inspector-modal').classList.add('hidden');
-      document.getElementById('inspection-detail-modal').classList.add('hidden');
+    function openAddMedicineModal() {
       editingMedicine = null;
+      document.getElementById('modal-title').innerText = 'เพิ่มยา/เวชภัณฑ์';
+      document.getElementById('medicine-form').reset();
+      document.getElementById('medicine-modal').classList.remove('hidden');
     }
 
-    // Load Data
-    async function loadMedicines() {
-      try {
-        updateConnectionStatus('loading', 'กำลังโหลดข้อมูล...');
-        return new Promise((resolve) => {
-          const callbackName = 'load_callback_' + Math.round(100000 * Math.random());
-          window[callbackName] = function(result) {
-            delete window[callbackName];
-            document.body.removeChild(script);
-            try {
-              if (result && result.success && result.data) {
-                allMedicines = result.data.map((item, index) => {
-                  const medicineData = {
-                    id: item.id || (index + 2).toString(),
-                    medicine_name: item.medicine_name || '',
-                    type: item.type || 'ยา',
-                    expiry_date: item.expiry_date || '',
-                    exchange_date: item.exchange_date || '',
-                    days_remaining: item.days_remaining || 0,
-                    status: item.status || 'ไม่ทราบ',
-                    recorded_at: item.recorded_at || new Date().toISOString()
-                  };
-                  if (medicineData.expiry_date && medicineData.type) {
-                    const { daysRemaining, status, exchangeDate } = calculateDaysAndStatus(medicineData.expiry_date, medicineData.type);
-                    medicineData.days_remaining = daysRemaining;
-                    medicineData.status = status;
-                    medicineData.exchange_date = exchangeDate;
-                  }
-                  return medicineData;
-                });
-                renderMedicineTable(allMedicines);
-                updateConnectionStatus('connected', 'เชื่อมต่อสำเร็จ');
-              } else {
-                allMedicines = [];
-                renderMedicineTable(allMedicines);
-                updateConnectionStatus('connected', 'ไม่มีข้อมูล');
-              }
-            } catch (error) {
-              allMedicines = []; renderMedicineTable(allMedicines);
-            }
-            resolve();
-          };
-          const script = document.createElement('script');
-          script.src = `${GOOGLE_SCRIPT_URL}?action=load&callback=${callbackName}&t=${Date.now()}`;
-          script.onerror = () => resolve();
-          document.body.appendChild(script);
-        });
-      } catch (error) {
-        allMedicines = []; renderMedicineTable(allMedicines);
-      }
-    }
-
-    async function loadInspectorNames() {
-      try {
-        return new Promise((resolve) => {
-          const callbackName = 'load_names_callback_' + Math.round(100000 * Math.random());
-          window[callbackName] = function(result) {
-            delete window[callbackName];
-            document.body.removeChild(script);
-            if (result && result.success && result.data) { inspectorNames = result.data; }
-            else { inspectorNames = []; }
-            updateInspectorSelect(); renderInspectorList();
-            resolve();
-          };
-          const script = document.createElement('script');
-          script.src = `${GOOGLE_SCRIPT_URL}?action=load_names&callback=${callbackName}&t=${Date.now()}`;
-          script.onerror = () => resolve();
-          document.body.appendChild(script);
-        });
-      } catch (error) {
-        updateInspectorSelect(); renderInspectorList();
-      }
-    }
-
-    function updateInspectorSelect() {
-      const inspectorSelect = document.getElementById('inspector');
-      const currentValue = inspectorSelect.value;
-      inspectorSelect.innerHTML = '<option value="">เลือกผู้ตรวจสอบ</option>';
-      inspectorNames.forEach(name => {
-        const option = document.createElement('option');
-        option.value = name; option.textContent = name;
-        inspectorSelect.appendChild(option);
-      });
-      if (currentValue && inspectorNames.includes(currentValue)) inspectorSelect.value = currentValue;
-    }
-
-    function renderInspectorList() {
-      const inspectorList = document.getElementById('inspector-list');
-      if (!inspectorNames || inspectorNames.length === 0) {
-        inspectorList.innerHTML = '<p class="text-gray-500 text-center py-4">ไม่มีรายชื่อผู้ตรวจสอบ</p>';
-        return;
-      }
-      inspectorList.innerHTML = inspectorNames.map((name, index) => `
-        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-          <span class="text-gray-800">${name}</span>
-          <div class="flex gap-2">
-            <button class="delete-inspector-btn text-red-600 hover:text-red-800 p-1" data-index="${index}" title="ลบ"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>
-          </div>
-        </div>
-      `).join('');
-      document.querySelectorAll('.delete-inspector-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          const index = parseInt(e.currentTarget.getAttribute('data-index'));
-          deleteInspectorName(index);
-        });
-      });
-    }
-
-    // Modal Events
-    document.getElementById('add-medicine-btn').addEventListener('click', () => showEditModal());
-    document.getElementById('close-modal').addEventListener('click', hideModal);
-    document.getElementById('close-detail-modal').addEventListener('click', hideModal);
-    document.getElementById('close-inspector-modal').addEventListener('click', hideModal);
-    document.getElementById('close-inspection-detail-modal').addEventListener('click', hideModal);
-    document.getElementById('cancel-btn').addEventListener('click', hideModal);
-    document.getElementById('manage-inspectors-btn').addEventListener('click', () => document.getElementById('inspector-modal').classList.remove('hidden'));
-
-    // Inspection Logic
-    function setupFormLogic() {
-      const dateInput = document.getElementById('date');
-      const shiftSelect = document.getElementById('shift');
-      const checkIdInput = document.getElementById('checkId');
-      const medicineTypeRadios = document.querySelectorAll('input[name="medicineType"]');
-      const medicineChecklist = document.getElementById('medicineChecklist');
-
-      function updateCheckId() {
-        const date = dateInput.value;
-        const shift = shiftSelect.value;
-        if (date && shift) checkIdInput.value = `${date}_${shift}`;
-        else checkIdInput.value = '';
-      }
-      dateInput.addEventListener('change', updateCheckId);
-      shiftSelect.addEventListener('change', updateCheckId);
-
-      medicineTypeRadios.forEach(radio => {
-        radio.addEventListener('change', (e) => {
-          if (e.target.value === 'มี Box ยา') {
-            medicineChecklist.classList.remove('hidden');
-          } else {
-            medicineChecklist.classList.add('hidden');
-            medicineChecklist.querySelectorAll('input[type="radio"]').forEach(rb => rb.checked = false);
-          }
-        });
-      });
-    }
-
-    function initSignaturePad() {
-      const canvas = document.getElementById('signature-pad');
-      if (!canvas) return;
-      signaturePad = { canvas: canvas, ctx: canvas.getContext('2d'), isDrawing: false, isEmpty: true };
-      const rect = canvas.getBoundingClientRect();
-      canvas.width = rect.width * 2; canvas.height = rect.height * 2;
-      signaturePad.ctx.scale(2, 2); signaturePad.ctx.lineCap = 'round'; signaturePad.ctx.lineWidth = 2; signaturePad.ctx.strokeStyle = '#000';
+    document.getElementById('medicine-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('medicine-name').value;
+      const type = document.getElementById('medicine-type').value;
+      const expDate = document.getElementById('expiry-date').value; 
       
-      const getPos = (e) => {
-        const r = canvas.getBoundingClientRect();
-        return {
-          x: (e.clientX || (e.touches && e.touches[0].clientX)) - r.left,
-          y: (e.clientY || (e.touches && e.touches[0].clientY)) - r.top
-        };
+      const d = new Date(expDate); 
+      const formatExp = `${d.getMonth()+1}/${d.getDate()}/${d.getFullYear()}`;
+
+      const payload = {
+        id: editingMedicine ? editingMedicine.id : null,
+        medicine_name: name, type: type, expiry_date: formatExp, exchange_date: '',
+        days_remaining: '', status: '', recorded_at: new Date().toLocaleString('th-TH')
       };
-
-      const startDrawing = (e) => { signaturePad.isDrawing = true; signaturePad.isEmpty = false; const pos = getPos(e); signaturePad.ctx.beginPath(); signaturePad.ctx.moveTo(pos.x, pos.y); };
-      const draw = (e) => { if (!signaturePad.isDrawing) return; e.preventDefault(); const pos = getPos(e); signaturePad.ctx.lineTo(pos.x, pos.y); signaturePad.ctx.stroke(); };
-      const stopDrawing = () => { signaturePad.isDrawing = false; };
-
-      canvas.addEventListener('mousedown', startDrawing); canvas.addEventListener('mousemove', draw); canvas.addEventListener('mouseup', stopDrawing); canvas.addEventListener('mouseout', stopDrawing);
-      canvas.addEventListener('touchstart', startDrawing, {passive:false}); canvas.addEventListener('touchmove', draw, {passive:false}); canvas.addEventListener('touchend', stopDrawing);
       
-      document.getElementById('clear-signature').addEventListener('click', () => {
-        signaturePad.ctx.clearRect(0, 0, signaturePad.canvas.width, signaturePad.canvas.height);
-        signaturePad.isEmpty = true;
-      });
+      Swal.fire({ title: 'กำลังบันทึก...', showConfirmButton: false });
+      await apiCall('saveMedicine', payload);
+      hideAllModals(); 
+      fetchMedicinesOnly();
+      Swal.close();
+    });
+
+    // --- ระบบรายชื่อ ---
+    function renderNamesData() {
+      const sel = document.getElementById('inspector');
+      const currentSelected = sel.value;
+      sel.innerHTML = '<option value="">เลือกชื่อผู้ตรวจสอบ</option>';
+      inspectorNames.forEach(n => sel.innerHTML += `<option value="${n}">${n}</option>`);
+      if(currentSelected && inspectorNames.includes(currentSelected)) sel.value = currentSelected;
     }
 
-    function collectFormData() {
-      const formData = {};
-      formData.date = document.getElementById('date').value;
-      formData.shift = document.getElementById('shift').value;
-      formData.id = `${formData.date}_${formData.shift}`;
+    document.getElementById('add-inspector-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const n = document.getElementById('new-inspector-name').value.trim();
+      if(n) { 
+        hideAllModals();
+        Swal.fire({ title: 'กำลังเพิ่มรายชื่อ...', showConfirmButton: false, allowOutsideClick: false });
+        await apiCall('saveName', n); 
+        document.getElementById('new-inspector-name').value = ''; 
+        inspectorNames = await apiCall('getNames');
+        renderNamesData();
+        document.getElementById('inspector').value = n; 
+        Swal.fire({ icon: 'success', title: 'เพิ่มสำเร็จ', timer: 1500, showConfirmButton: false });
+      }
+    });
+
+    async function deleteSelectedInspector() {
+      const sel = document.getElementById('inspector');
+      const name = sel.value;
+      if(!name) return Swal.fire({icon: 'warning', title: 'แจ้งเตือน', text: 'กรุณาเลือกชื่อที่ต้องการลบจากช่องก่อนครับ'});
       
-      const typeRadio = document.querySelector('input[name="medicineType"]:checked');
-      formData.box_type = typeRadio ? typeRadio.value : '';
-      formData['ประเภท Box ยา'] = formData.box_type;
+      const confirmResult = await Swal.fire({
+        title: 'ยืนยันการลบ?',
+        text: `ต้องการลบรายชื่อ "${name}" ออกจากระบบใช่หรือไม่?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#ef4444',
+        cancelButtonColor: '#9ca3af',
+        confirmButtonText: 'ลบรายชื่อ',
+        cancelButtonText: 'ยกเลิก'
+      });
 
-      const getVal = (name) => { const r = document.querySelector(`input[name="${name}"]:checked`); return r ? r.value : ''; };
+      if(confirmResult.isConfirmed) {
+        Swal.fire({ title: 'กำลังลบ...', showConfirmButton: false, allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+        const res = await apiCall('deleteName', name);
+        if(res.success) {
+           sel.value = '';
+           inspectorNames = await apiCall('getNames');
+           renderNamesData();
+           Swal.fire({ icon: 'success', title: 'ลบสำเร็จ', timer: 1500, showConfirmButton: false });
+        }
+      }
+    }
 
-      // Floor 1
-      if (formData.box_type === 'มี Box ยา') {
-        formData['Adrenaline ( 1 : 1000 ) 5 amp'] = getVal('eq_adrenaline');
-        formData['Amiodarone 2 amp'] = getVal('eq_amiodarone');
-        formData['Atropine (0.6 mg/amp.) 2 amp'] = getVal('eq_atropine');
-        formData['Adenosine (6 mg./vial) 1 amp'] = getVal('eq_adenosine');
-        formData['Valium (10 mg./amp.) 1 amp'] = getVal('eq_valium');
-        formData['50% Glucose (50 ml./vial) 1 vial'] = getVal('eq_glucose');
-        formData['0.9 % NSS (100 ml 2 ขวด)'] = getVal('eq_nss100');
-        formData['5 % DW (100 ml 2 ขวด)'] = getVal('eq_dw5');
+    // --- ระบบประวัติ ---
+    function parseThaiDateStr(str) {
+      if(!str) return { day: '-', dateStr: '-' };
+      const match = str.match(/(วัน[ก-๙]+)?\s*(\d{1,2})\s*([ก-๙]+)\s*(\d{4})/);
+      if(match) {
+        const day = match[1] || '-';
+        return { day: day, dateStr: `${match[2]} ${match[3]} ${match[4]}` };
+      }
+      return { day: '-', dateStr: str };
+    }
+
+    function setupFilters() {
+      const mSel = document.getElementById('filter-month');
+      const ySel = document.getElementById('filter-year');
+      const thaiMonths = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+      
+      mSel.innerHTML = '<option value="">ทุกเดือน</option>';
+      thaiMonths.forEach(m => mSel.innerHTML += `<option value="${m}">${m}</option>`);
+      
+      ySel.innerHTML = '<option value="">ทุกปี</option>';
+      const currentY = new Date().getFullYear() + 543;
+      for(let y = currentY-2; y <= currentY+2; y++) ySel.innerHTML += `<option value="${y}">${y}</option>`;
+
+      mSel.value = thaiMonths[new Date().getMonth()];
+      ySel.value = currentY.toString();
+
+      mSel.addEventListener('change', renderInspections);
+      ySel.addEventListener('change', renderInspections);
+    }
+
+    async function fetchInspectionsOnly() {
+      allInspections = await apiCall('getInspections');
+      renderInspections();
+    }
+
+    function renderInspections() {
+      const tbody = document.getElementById('inspection-table-body');
+      const fM = document.getElementById('filter-month').value;
+      const fY = document.getElementById('filter-year').value;
+
+      let filtered = allInspections || [];
+      if (fM || fY) {
+        filtered = filtered.filter(item => {
+          let matchM = true, matchY = true;
+          if (fM) matchM = item.id.includes(fM); 
+          if (fY) matchY = item.id.includes(fY);
+          return matchM && matchY;
+        });
       }
 
-      // Floor 2
-      formData['0.9 % NSS (1000 ml 1 ขวด)'] = getVal('eq_nss1000');
-      formData['Syringe Disposable ขนาดต่างๆ อย่างละ 3'] = getVal('eq_syringe');
-      formData['เข็มฉีดยา เบอร์18-24 อย่างละ 3'] = getVal('eq_needle');
-      formData['Set IV 3 set'] = getVal('eq_set_iv');
-      formData['IV Catheter No. 24, 22, 20, 18 อย่างละ 3'] = getVal('eq_iv_cath');
-      formData['Injection plug 3 set'] = getVal('eq_inj_plug');
-      formData['Extension Tube 3 set'] = getVal('eq_ext_tube');
-      formData['Three - way 3 อัน'] = getVal('eq_3way');
-      formData['Transpore 1 นิ้ว 1ม้วน'] = getVal('eq_transpore');
-      formData['Tourniquet 2 อัน'] = getVal('eq_tourniquet');
-
-      // Floor 3
-      formData['สาย Suction No 14,16 อย่างละ 1'] = getVal('eq_suction');
-      formData['Ambu bag + Mask  1 ชุด'] = getVal('eq_ambu');
-      formData['สายต่อออกซิเจน 1 เส้น'] = getVal('eq_o2_line');
-      formData['O2 Mask c bag,O2 canular อย่างละ 1'] = getVal('eq_o2_mask');
-      formData['กรรไกร 1'] = getVal('eq_scissors');
-      formData['ถุงมือ, Mask อย่างละ 5 อัน'] = getVal('eq_gloves');
-      formData['Stethoscope 1'] = getVal('eq_steth');
-      formData['กระดานและปากกา 1'] = getVal('eq_clipboard');
-      formData['CPR reccord'] = getVal('eq_cpr');
-
-      formData.inspector = document.getElementById('inspector').value;
-      formData.signature = signaturePad && !signaturePad.isEmpty ? signaturePad.canvas.toDataURL() : null;
-      return formData;
+      if(filtered.length > 0) {
+        tbody.innerHTML = filtered.reverse().map((item) => {
+          const parsed = parseThaiDateStr(item.id);
+          return `
+          <tr class="border-b border-gray-50 text-center">
+            <td class="px-3 py-2 text-sm font-semibold text-emerald-600 text-left">${parsed.day}</td>
+            <td class="px-3 py-2 text-sm text-gray-500 text-left whitespace-nowrap">${parsed.dateStr}</td>
+            <td class="px-3 py-2 truncate max-w-[100px] text-sm">${item.inspector}</td>
+            <td class="px-3 py-2">${item.signature ? `<img src="${item.signature}" class="h-6 mx-auto object-contain border border-gray-200 rounded">` : '-'}</td>
+            <td class="px-3 py-2">
+               <div class="flex justify-center gap-2">
+                  <button onclick="viewInsp('${item.id}')" class="text-blue-500 text-xl hover:scale-110" title="ดูรายละเอียด">👁️</button>
+                  <button onclick="editInsp('${item.id}')" class="text-emerald-500 text-xl hover:scale-110" title="แก้ไข">✏️</button>
+                  <button onclick="delInsp('${item.id}')" class="text-red-500 text-xl hover:scale-110" title="ลบ">🗑️</button>
+               </div>
+            </td>
+          </tr>
+        `}).join('');
+      } else tbody.innerHTML = '<tr><td colspan="5" class="text-center py-5 text-gray-400 text-sm">ไม่มีประวัติในเดือนนี้</td></tr>';
     }
+
+    function viewInsp(id) {
+      const insp = allInspections.find(i => i.id === id);
+      if(!insp) return;
+      const parsed = parseThaiDateStr(insp.id);
+      document.getElementById('insp-detail-content').innerHTML = `
+        <p class="text-base"><strong>วัน:</strong> ${parsed.day} ${parsed.dateStr}</p>
+        <p class="text-base"><strong>ประเภท Box:</strong> <span class="text-emerald-600">${insp.box_type}</span></p>
+        <p class="text-base"><strong>ผู้ตรวจสอบ:</strong> ${insp.inspector}</p>
+      `;
+      document.getElementById('insp-detail-modal').classList.remove('hidden');
+    }
+
+    function editInsp(id) {
+      const insp = allInspections.find(i => i.id === id);
+      if(!insp) return;
+      editingInspectionId = id;
+      
+      const parsed = parseThaiDateStr(insp.id);
+      const match = id.match(/(วัน[ก-๙]+)?\s*(\d{1,2})\s*([ก-๙]+)\s*(\d{4})/);
+      if(match) {
+         document.getElementById('day').value = match[1] || '';
+         const thaiMonths = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+         const mIdx = thaiMonths.indexOf(match[3]) + 1;
+         const y = parseInt(match[4]) - 543;
+         document.getElementById('date').value = `${y}-${mIdx.toString().padStart(2,'0')}-${match[2].padStart(2,'0')}`;
+      }
+      
+      document.getElementById('checkId').value = insp.id;
+      document.getElementById('inspector').value = insp.inspector;
+      
+      const radioBox = document.querySelector(`input[name="medicineType"][value="${insp.box_type}"]`);
+      if(radioBox) radioBox.checked = true;
+
+      for(let i=1; i<=19; i++) {
+        const val = insp[`eq_${i}`];
+        if(val) {
+          const radio = document.querySelector(`input[name="eq_${i}"][value="${val}"]`);
+          if(radio) radio.checked = true;
+        }
+      }
+      
+      document.getElementById('submit-inspection').innerText = 'บันทึกการแก้ไข';
+      document.getElementById('cancel-edit-btn').classList.remove('hidden');
+      document.getElementById('emergencyForm').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function cancelEditInspection() {
+      editingInspectionId = null;
+      document.getElementById('emergencyForm').reset();
+      document.getElementById('submit-inspection').innerText = 'บันทึกการตรวจสอบ';
+      document.getElementById('cancel-edit-btn').classList.add('hidden');
+      document.getElementById('clear-signature').click();
+      updateId();
+    }
+
+    async function delInsp(id) { if(confirm('ลบประวัตินี้?')) { await apiCall('deleteInspectionRecord', id); fetchInspectionsOnly(); } }
+
+    function initSignature() {
+      const canvas = document.getElementById('signature-pad');
+      const ctx = canvas.getContext('2d');
+      const r = canvas.parentElement.getBoundingClientRect();
+      canvas.width = r.width * 2; canvas.height = r.height * 2;
+      ctx.scale(2, 2); ctx.lineCap = 'round'; ctx.lineWidth = 2; ctx.strokeStyle = '#047857';
+
+      let isD = false, isE = true;
+      const getP = (e) => { const r = canvas.getBoundingClientRect(); return { x: (e.clientX || (e.touches && e.touches[0].clientX)) - r.left, y: (e.clientY || (e.touches && e.touches[0].clientY)) - r.top }; };
+      const start = (e) => { isD = true; isE = false; const p = getP(e); ctx.beginPath(); ctx.moveTo(p.x, p.y); };
+      const draw = (e) => { if (!isD) return; e.preventDefault(); const p = getP(e); ctx.lineTo(p.x, p.y); ctx.stroke(); };
+      const stop = () => { isD = false; };
+
+      canvas.addEventListener('mousedown', start); canvas.addEventListener('mousemove', draw); canvas.addEventListener('mouseup', stop); canvas.addEventListener('mouseout', stop);
+      canvas.addEventListener('touchstart', start, {passive:false}); canvas.addEventListener('touchmove', draw, {passive:false}); canvas.addEventListener('touchend', stop);
+      document.getElementById('clear-signature').addEventListener('click', () => { ctx.clearRect(0, 0, canvas.width, canvas.height); isE = true; });
+      signaturePad = { canvas, isEmpty: () => isE };
+    }
+
+    function updateId() {
+      const dayStr = document.getElementById('day').value;
+      const dateVal = document.getElementById('date').value;
+      if(!editingInspectionId && dayStr && dateVal) {
+        const dObj = new Date(dateVal);
+        const thaiMonths = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+        document.getElementById('checkId').value = `${dayStr}${dObj.getDate()}${thaiMonths[dObj.getMonth()]}${dObj.getFullYear() + 543}`;
+      }
+    }
+    
+    document.getElementById('day').addEventListener('change', updateId);
+    document.getElementById('date').addEventListener('change', updateId);
 
     document.getElementById('emergencyForm').addEventListener('submit', async (e) => {
       e.preventDefault();
-      const formData = collectFormData();
-      const requiredFields = [];
+      if (!editingInspectionId && signaturePad.isEmpty()) return Swal.fire({ icon: 'warning', title: 'แจ้งเตือน', text: 'กรุณาเซ็นชื่อรับรอง' });
+
+      updateId(); 
+      const checkIdVal = document.getElementById('checkId').value;
+      if(!checkIdVal) return Swal.fire({ icon: 'warning', title: 'แจ้งเตือน', text: 'กรุณาเลือกวันและวันที่ตรวจ' });
       
-      if (!formData.date) requiredFields.push('วันที่');
-      if (!formData.shift) requiredFields.push('เวร');
-      if (!formData.box_type) requiredFields.push('ประเภท Box ยา');
-      if (!formData.inspector) requiredFields.push('ผู้ตรวจสอบ');
-      if (!formData.signature) requiredFields.push('ลายเซ็น');
-
-      const requiredRadios = [
-        'eq_nss1000', 'eq_syringe', 'eq_needle', 'eq_set_iv', 'eq_iv_cath', 'eq_inj_plug', 'eq_ext_tube', 'eq_3way', 'eq_transpore', 'eq_tourniquet',
-        'eq_suction', 'eq_ambu', 'eq_o2_line', 'eq_o2_mask', 'eq_scissors', 'eq_gloves', 'eq_steth', 'eq_clipboard', 'eq_cpr'
-      ];
-
-      if (formData.box_type === 'มี Box ยา') {
-        requiredRadios.push('eq_adrenaline', 'eq_amiodarone', 'eq_atropine', 'eq_adenosine', 'eq_valium', 'eq_glucose', 'eq_nss100', 'eq_dw5');
-      }
-
-      requiredRadios.forEach(radioName => {
-        if (!document.querySelector(`input[name="${radioName}"]:checked`)) {
-          requiredFields.push(`สถานะอุปกรณ์ของ ${radioName}`);
-        }
-      });
-
-      if (requiredFields.length > 0) {
-        return Swal.fire({ icon: 'error', title: 'ข้อมูลไม่ครบถ้วน', html: `กรุณาตรวจสอบข้อมูลให้ครบถ้วน` });
-      }
-
-      const submitBtn = document.getElementById('submit-inspection');
-      submitBtn.disabled = true; submitBtn.innerHTML = 'กำลังบันทึก...';
+      const btn = document.getElementById('submit-inspection');
+      btn.disabled = true; btn.innerText = 'กำลังบันทึก...';
 
       try {
-        const submitFormData = new FormData();
-        submitFormData.append('action', editingInspection ? 'update_inspection' : 'create_inspection');
-        submitFormData.append('data', JSON.stringify(formData));
-        if (editingInspection) submitFormData.append('id', editingInspection.id);
+        const payload = {
+          id: checkIdVal,
+          box_type: document.querySelector('input[name="medicineType"]:checked').value,
+          inspector: document.getElementById('inspector').value,
+          signature: signaturePad.isEmpty() ? null : signaturePad.canvas.toDataURL('image/png'),
+          is_edit: !!editingInspectionId
+        };
+        for(let i=1; i<=19; i++) {
+          const r = document.querySelector(`input[name="eq_${i}"]:checked`);
+          payload[`eq_${i}`] = r ? r.value : '';
+        }
 
-        const response = await fetch(INSPECTION_SHEET_URL, { method: 'POST', body: submitFormData });
-        const result = await response.json();
-
+        Swal.fire({ title: 'กำลังบันทึกข้อมูล...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+        const result = await apiCall('saveInspection', payload);
+        
         if (result.success) {
-          await loadInspections();
-          Swal.fire({ icon: 'success', title: 'บันทึกสำเร็จ', timer: 2000, showConfirmButton: false });
-          document.getElementById('emergencyForm').reset();
-          document.getElementById('medicineChecklist').classList.add('hidden');
-          document.getElementById('clear-signature').click();
-          editingInspection = null;
+          Swal.fire({ icon: 'success', title: 'บันทึกสำเร็จ', timer: 1500, showConfirmButton: false });
+          cancelEditInspection(); 
+          fetchInspectionsOnly();
         } else throw new Error(result.error);
-      } catch (error) {
-        Swal.fire({ icon: 'error', title: 'ผิดพลาด', text: error.message });
+      } catch (err) {
+        Swal.fire({ icon: 'error', title: 'ผิดพลาด', text: err.message });
       } finally {
-        submitBtn.disabled = false; submitBtn.innerHTML = `<svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> บันทึกการตรวจสอบ`;
+        btn.disabled = false; btn.innerText = editingInspectionId ? 'บันทึกการแก้ไข' : 'บันทึกการตรวจสอบ';
       }
     });
 
-    // Load Inspections Table
-    async function loadInspections() {
-      try {
-        return new Promise((resolve) => {
-          const callbackName = 'load_inspections_callback_' + Math.round(100000 * Math.random());
-          window[callbackName] = function(result) {
-            delete window[callbackName]; document.body.removeChild(script);
-            if (result && result.success && result.data) {
-              allInspections = result.data.map((item, i) => ({ id: item.id || (i+2).toString(), ...item }));
-              renderInspectionTable(allInspections);
-            } else { allInspections = []; renderInspectionTable(allInspections); }
-            resolve();
-          };
-          const script = document.createElement('script');
-          script.src = `${INSPECTION_SHEET_URL}?action=load_inspections&callback=${callbackName}&t=${Date.now()}`;
-          script.onerror = () => resolve(); document.body.appendChild(script);
-        });
-      } catch (e) { allInspections = []; renderInspectionTable(allInspections); }
-    }
-
-    function renderInspectionTable(inspections) {
-      const tbody = document.getElementById('inspection-table-body');
-      const emptyState = document.getElementById('inspection-empty-state');
-      if (!inspections || inspections.length === 0) { tbody.innerHTML = ''; emptyState.classList.remove('hidden'); return; }
-      emptyState.classList.add('hidden');
-      
-      const sorted = [...inspections].sort((a,b) => new Date(b.date) - new Date(a.date));
-      tbody.innerHTML = sorted.map((item, i) => `
-        <tr class="hover:bg-gray-50 transition-all border-b border-gray-100 last:border-0" data-row-index="${i}">
-          <td class="px-4 py-3 text-center text-sm">${item.date ? new Date(item.date).toLocaleDateString('th-TH') : ''}</td>
-          <td class="px-4 py-3 text-center"><span class="px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-700">${item.shift || ''}</span></td>
-          <td class="px-4 py-3 text-center font-medium">${item.inspector || ''}</td>
-          <td class="px-4 py-3 text-center">${item.signature ? `<img src="${item.signature}" class="w-16 h-8 mx-auto object-contain bg-white border border-gray-200 rounded">` : '-'}</td>
-          <td class="px-4 py-3 text-center">
-            <button class="view-inspection-btn text-blue-600 bg-blue-50 p-2 rounded hover:bg-blue-100" data-row-index="${i}">ดู</button>
-            <button class="delete-inspection-btn text-red-600 bg-red-50 p-2 rounded hover:bg-red-100" data-row-index="${i}">ลบ</button>
-          </td>
-        </tr>
-      `).join('');
-
-      document.querySelectorAll('.view-inspection-btn').forEach(btn => btn.addEventListener('click', e => showInspectionDetailModal(sorted[e.currentTarget.getAttribute('data-row-index')])));
-      document.querySelectorAll('.delete-inspection-btn').forEach(btn => btn.addEventListener('click', async e => {
-        const item = sorted[e.currentTarget.getAttribute('data-row-index')];
-        if(confirm(`ต้องการลบการตรวจสอบของ ${item.inspector} ใช่หรือไม่?`)) {
-          const fd = new FormData(); fd.append('action', 'delete_inspection'); fd.append('id', item.id);
-          await fetch(INSPECTION_SHEET_URL, { method: 'POST', body: fd });
-          loadInspections();
-        }
-      }));
-    }
-
-    function showInspectionDetailModal(inspection) {
-      const modal = document.getElementById('inspection-detail-modal');
-      const content = document.getElementById('inspection-detail-content');
-      
-      content.innerHTML = `
-        <div class="space-y-4">
-          <div class="bg-gray-50 p-4 rounded-xl">
-            <h4 class="font-bold text-gray-800 mb-2">ข้อมูลเบื้องต้น</h4>
-            <p>วันที่: ${inspection.date ? new Date(inspection.date).toLocaleDateString('th-TH') : ''} | เวร: ${inspection.shift}</p>
-            <p>ผู้ตรวจสอบ: ${inspection.inspector}</p>
-            <p class="mt-2 text-emerald-700 font-bold">ประเภท Box ยา: ${inspection['ประเภท Box ยา'] || inspection.box_type || '-'}</p>
-          </div>
-        </div>
-      `;
-      modal.classList.remove('hidden');
-    }
-
-    // Init
-    document.addEventListener('DOMContentLoaded', () => {
-      loadMedicines();
-      loadInspections();
-      loadInspectorNames();
-      initSignaturePad();
-      setupFormLogic();
-      document.getElementById('date').value = new Date().toISOString().split('T')[0];
-    });
+    window.onload = () => {
+      const d = document.getElementById('date');
+      d.value = new Date().toISOString().split('T')[0];
+      setupFilters();
+      generateFormUI();
+      initSignature();
+      fetchInitialData();
+    };
   </script>
 </body>
 </html>
